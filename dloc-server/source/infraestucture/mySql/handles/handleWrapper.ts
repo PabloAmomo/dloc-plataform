@@ -3,5 +3,6 @@ import { handleAddDiscarted } from "./handleAddDiscarted";
 import { handleAddHistory } from "./handleAddHistory";
 import { handleAddPosition } from "./handleAddPosition";
 import { handleUpdateDevice } from "./handleUpdateDevice";
+import { handleUpdateLastActivity } from "./handleUpdateLastActivity";
 
-export { handleAddBatteryLevel, handleAddDiscarted, handleAddHistory, handleAddPosition, handleUpdateDevice };
+export { handleAddBatteryLevel, handleAddDiscarted, handleAddHistory, handleAddPosition, handleUpdateDevice, handleUpdateLastActivity };

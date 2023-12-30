@@ -15,6 +15,9 @@ const handleConnections = (conn: net.Socket, persistence: Persistence) => {
   /** New socket connection */
   printMessage(`[---------------] (${remoteAdd}) new connection.`);
 
+  /** Send upload time */
+  conn.write('TRVWP020000010020#');
+
   /** Create event listeners for socket connection */
   conn.once('close', () => handleClose(remoteAdd));
   conn.on('end', () => handleEnd(remoteAdd));

@@ -6,6 +6,8 @@ export interface Persistence {
   addPosition: AddPosition;
   addBatteryLevel: AddBatteryLevel;
   addHistory: AddHistory;
+  updateDevice: UpdateDevice;
+  updateLastActivity: UpdateLastActivity;
   getPersistenceName: GetPersistenceName;
 }
 
@@ -26,4 +28,7 @@ export interface AddHistory {
 }
 export interface UpdateDevice {
   (locationPacket: PositionPacket):  Promise<DatabaseResult>;
+}
+export interface UpdateLastActivity {
+  (imei: string, remoteAddress: string):  Promise<DatabaseResult>;
 }

@@ -96,6 +96,16 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     response.response = `TRVBP${data.substring(5, 7)}#`;
   }
 
+  // ------------------------------------------------
+  // Response to TRVWP02 config packet (Only Info)
+  // ------------------------------------------------
+  else if (data.startsWith('TRVXP020000010')) {
+    persistence.updateLastActivity(response.imei, remoteAdd).then((result: DatabaseResult) => { 
+      if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error updating last activity [${result.error}]`);
+    });
+    printMessage(`[${response.imei == '' ? '---------------' : response.imei}] (${remoteAdd}) confirmed TRVWP02 packet received`);
+  }
+
   // ---------------------------------------------
   // Unknow command - Discart packet
   // ---------------------------------------------
