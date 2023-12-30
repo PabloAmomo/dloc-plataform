@@ -31,7 +31,7 @@ CREATE TABLE `device` (
   `directionAngle` float DEFAULT NULL,
   `gsmSignal` int(11) DEFAULT NULL,
   `batteryLevel` int(11) DEFAULT NULL,
-  `lastVisibility` datetime DEFAULT NULL,
+  `lastVisibilityUTC` datetime DEFAULT NULL,
   `creationDate` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`imei`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
