@@ -34,7 +34,7 @@ const handleUpdateDevice = async (positionPacket: PositionPacket): Promise<Datab
     mySqlFormatDateTime(positionPacket.dateTimeUtc)
   ];
   const sql = `
-              REPLACE INTO device (imei, lastPositionUTC, lat, lng, speed, directionAngle, gsmSignal, batteryLevel, lastVisibility)
+              REPLACE INTO device (imei, lastPositionUTC, lat, lng, speed, directionAngle, gsmSignal, batteryLevel, lastVisibilityUTC)
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);  
              `;
   return mySqlQueryAsync(connectionConfig, sql, params);

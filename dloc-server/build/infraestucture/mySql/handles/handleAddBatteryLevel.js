@@ -21,7 +21,7 @@ const handleAddBatteryLevel = (imei, remoteAddress, batteryLevel) => __awaiter(v
         imei,
         batteryLevel,
     ];
-    const sql = `REPLACE INTO device (imei, batteryLevel, lastVisibility) VALUES (?, ?, UTC_TIMESTAMP());`;
+    const sql = `REPLACE INTO device (imei, batteryLevel, lastVisibilityUTC) VALUES (?, ?, UTC_TIMESTAMP());`;
     return (0, mySqlQueryAsync_1.default)(connectionConfig, sql, params);
 });
 exports.handleAddBatteryLevel = handleAddBatteryLevel;
