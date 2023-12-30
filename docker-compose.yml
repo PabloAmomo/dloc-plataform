@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  dloc-database:
+    image: mariadb:10.4
+    container_name: dloc-database
+    ports: 
+      - ${PORT_MYSQL}:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    restart: always
+    networks: ["dloc-network"]
+    env_file:
+      - .env
+    volumes:
+      - ./dloc-database:/var/lib/mysql
+    healthcheck:
+      test: "mysql -u$$MYSQL_USER -p$$MYSQL_PASSWORD -e 'SELECT 1'"
+      interval: 1s
+      timeout: 3s
+      retries: 3
+
+  dloc-server:
+    image: dloc-server
+    restart: always
+    container_name: dloc-server
+    networks: ["dloc-network"]
+    build: ./dloc-server
+    ports: 
+      - ${PORT_SERVER}:8080
+    depends_on:
+      dloc-database:
+        condition: service_healthy
+       
+networks:
+  dloc-network:

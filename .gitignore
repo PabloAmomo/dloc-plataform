@@ -1,0 +1,4 @@
+dloc-database/**
+**/node_modules
+**/.env
+

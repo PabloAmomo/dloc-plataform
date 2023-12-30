@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handleUpdateDevice = exports.handleAddPosition = exports.handleAddHistory = exports.handleAddDiscarted = exports.handleAddBatteryLevel = void 0;
+const handleAddBatteryLevel_1 = require("./handleAddBatteryLevel");
+Object.defineProperty(exports, "handleAddBatteryLevel", { enumerable: true, get: function () { return handleAddBatteryLevel_1.handleAddBatteryLevel; } });
+const handleAddDiscarted_1 = require("./handleAddDiscarted");
+Object.defineProperty(exports, "handleAddDiscarted", { enumerable: true, get: function () { return handleAddDiscarted_1.handleAddDiscarted; } });
+const handleAddHistory_1 = require("./handleAddHistory");
+Object.defineProperty(exports, "handleAddHistory", { enumerable: true, get: function () { return handleAddHistory_1.handleAddHistory; } });
+const handleAddPosition_1 = require("./handleAddPosition");
+Object.defineProperty(exports, "handleAddPosition", { enumerable: true, get: function () { return handleAddPosition_1.handleAddPosition; } });
+const handleUpdateDevice_1 = require("./handleUpdateDevice");
+Object.defineProperty(exports, "handleUpdateDevice", { enumerable: true, get: function () { return handleUpdateDevice_1.handleUpdateDevice; } });
