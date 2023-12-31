@@ -17,6 +17,14 @@ const persistence = new mySqlPersistence();
 const startServer = () => {
   server = net.createServer();
 
+  /** Clean Persistence */
+  const cleanPersistence = () => {
+    printMessage(`Persistence clean started...`);
+    persistence.clean().then((result) => {
+      if (!result.error) printMessage(`Persistence cleaned...`);
+    });
+  };
+
   /** Check PORT environment variable */
   if (!process.env.PORT) {
     printMessage('Error: PORT environment variable not defined');
@@ -24,11 +32,7 @@ const startServer = () => {
   }
 
   /** Clean database every hour */
-  setInterval(() => {
-    persistence.clean().then((result) => {
-      if (!result.error) printMessage(`Database cleaned`);
-    });
-  }, 3600000);
+  setInterval(() => cleanPersistence(), 3600000);
 
   /** Handle server events */
   server.on('connection', (conn) => handleConnections(conn, persistence));
@@ -42,19 +46,20 @@ const startServer = () => {
     }
   });
 
-  /** Start server */
+  /** Banner */
   printMessage('--------------------------------------------------------------------------');
   printMessage(' GPS Server listening on port ' + process.env.PORT);
   printMessage('--------------------------------------------------------------------------');
-  printMessage(`Persistence: [${persistence.getPersistenceName()}]`);
-
+  
   /** Check persistence */
+  printMessage(`Persistence: [${persistence.getPersistenceName()}]`);
   persistence.health().then((result) => {
     if (result.error) {
-      printMessage(`Database not ready: ${result.error.message}`);
+      printMessage(`Persistence not ready: ${result.error.message}`);
       process.exit(1);
     }
     printMessage(`Persistence checked...`);
+    cleanPersistence();
   });
 
   /** Start server */
