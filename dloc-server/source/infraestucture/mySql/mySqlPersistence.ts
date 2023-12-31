@@ -1,5 +1,5 @@
 import { PositionPacket } from '../../models/PositionPacket';
-import { Persistence, UpdateLastActivity } from '../../models/Persistence';
+import { Persistence } from '../../models/Persistence';
 import { PersistenceResult } from '../models/PersistenceResult';
 import * as wrapper from './handles/handleWrapper';
 
@@ -26,6 +26,12 @@ class mySqlPersistence implements Persistence {
   updateLastActivity(imei: string, remoteAddress: string):  Promise<PersistenceResult> {
     return wrapper.handleUpdateLastActivity(imei, remoteAddress);
   }
+  clean():  Promise<PersistenceResult> {
+    return wrapper.handleClean();
+  } 
+  health():  Promise<PersistenceResult> {
+    return wrapper.handleHealth();
+  } 
 }
 
 export { mySqlPersistence };

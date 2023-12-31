@@ -9,6 +9,8 @@ export interface Persistence {
   updateDevice: UpdateDevice;
   updateLastActivity: UpdateLastActivity;
   getPersistenceName: GetPersistenceName;
+  clean: clean;
+  health: health;
 }
 
 export interface GetPersistenceName {
@@ -31,4 +33,10 @@ export interface UpdateDevice {
 }
 export interface UpdateLastActivity {
   (imei: string, remoteAddress: string):  Promise<PersistenceResult>;
+}
+export interface clean {
+  ():  Promise<PersistenceResult>;
+}
+export interface health {
+  ():  Promise<PersistenceResult>;
 }
