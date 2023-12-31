@@ -1,0 +1,10 @@
+SERVER:
+  Pendiente ver test TRVYP15
+
+  Chequear el estado de la Base de datos al inicio del proceso.
+
+  Borrar historico de 
+    history
+    discarted
+    position
+
