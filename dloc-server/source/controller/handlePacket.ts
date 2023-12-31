@@ -97,6 +97,13 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   }
 
   // ------------------------------------------------
+  // Packets with not response needed
+  // ------------------------------------------------
+  else if (data.startsWith('TRVAP20') || data.startsWith('TRVAP61')) {
+    printMessage(`[${response.imei == '' ? '---------------' : response.imei}] (${remoteAdd}) received no response needed -> ${data}`);
+  }
+
+  // ------------------------------------------------
   // Response to TRVWP02 config packet (Only Info)
   // ------------------------------------------------
   else if (data.startsWith('TRVXP020000010')) {
