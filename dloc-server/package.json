@@ -14,14 +14,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "mysql": "^2.18.1"
+    "dotenv": "16.3.1",
+    "mysql": "2.18.1"
   },
   "devDependencies": {
-    "@types/mysql": "^2.15.25",
-    "del-cli": "^5.1.0",
-    "nodemon": "^3.0.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "@types/mysql": "2.15.25",
+    "del-cli": "5.1.0",
+    "nodemon": "3.0.2",
+    "ts-node": "10.9.2",
+    "typescript": "5.3.3"
   }
 }
