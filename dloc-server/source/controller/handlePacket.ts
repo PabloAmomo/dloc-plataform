@@ -1,5 +1,5 @@
 import { createLocationPacket } from '../functions/createLocationPacket';
-import { DatabaseResult } from '../infraestucture/models/DatabaseResult';
+import { PersistenceResult } from '../infraestucture/models/PersistenceResult';
 import { getUtcDateTime } from '../functions/getUtcDateTime';
 import { HandlePacket } from '../models/HandlePacket';
 import { HandlePacketResult } from '../models/HandlePacketResult';
@@ -15,7 +15,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   /** Common function to discart packet */
   const discardData = (message: string) => {
     response.error = message;
-    persistence.addDiscarted(response.imei, remoteAdd, message, data).then((result: DatabaseResult) => {
+    persistence.addDiscarted(response.imei, remoteAdd, message, data).then((result: PersistenceResult) => {
       if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error persisting discarted [${result.error}]`);
       // TODO: (addDiscarted) Process errors when persisting
     });
@@ -49,7 +49,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
 
     /** Create location packet and persist */
     const locationPacket: PositionPacket = createLocationPacket(response.imei, remoteAdd, values);
-    persistence.addPosition(locationPacket).then((result: DatabaseResult) => {
+    persistence.addPosition(locationPacket).then((result: PersistenceResult) => {
       if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error persisting position [${result.error}]`);
       // TODO: (addPosition) Process errors when persisting
     });
@@ -67,13 +67,13 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     /** Process Battery level */
     if (data.length >= 18) {
       const batteryLevel: number = parseInt(data.substring(14, 17) ?? '0');
-      persistence.addBatteryLevel(response.imei, remoteAdd, batteryLevel).then((result: DatabaseResult) => {
+      persistence.addBatteryLevel(response.imei, remoteAdd, batteryLevel).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error persisting battery level [${result.error}]`);
         // TODO: (addBatteryLevel) Process errors when persisting
       });
     } else {
       /** Or simple update last activity */
-      persistence.updateLastActivity(response.imei, remoteAdd).then((result: DatabaseResult) => {
+      persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error updating last activity [${result.error}]`);
         // TODO: (updateLastActivity) Process errors when persisting
       });
@@ -114,7 +114,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // Response to TRVWP02 config packet (Only Info)
   // ------------------------------------------------
   else if (data.startsWith('TRVXP020000010')) {
-    persistence.updateLastActivity(response.imei, remoteAdd).then((result: DatabaseResult) => {
+    persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
       if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error updating last activity [${result.error}]`);
       // TODO: (addHistory) Process errors when persisting
     });
@@ -135,7 +135,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   printMessage(`[${response.imei}] (${remoteAdd}) ${message}`);
 
   /** Add history (Discarted packets not added) */
-  persistence.addHistory(response.imei, remoteAdd, data).then((result: DatabaseResult) => {
+  persistence.addHistory(response.imei, remoteAdd, data).then((result: PersistenceResult) => {
     if (result.error) printMessage(`[${response.imei}] (${remoteAdd}) error persisting history [${result.error}]`);
     // TODO: (addHistory) Process errors when persisting
   });

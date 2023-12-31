@@ -1,4 +1,4 @@
-export interface DatabaseResult {
+export interface PersistenceResult {
   results: any[];
   error: Error | null;
 }

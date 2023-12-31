@@ -1,10 +1,10 @@
 import mysql from 'mysql';
 import { mySqlConnection } from './mySqlConnection';
-import { DatabaseResult } from '../../models/DatabaseResult';
+import { PersistenceResult } from '../../models/PersistenceResult';
 
 /** Query database (SELECT, UPDATE, INSERT...) */
-const mySqlQueryAsync = async (connectionConfig: mysql.ConnectionConfig, sql: string, values: any[]): Promise<DatabaseResult> => {
-  const response: DatabaseResult = {
+const mySqlQueryAsync = async (connectionConfig: mysql.ConnectionConfig, sql: string, values: any[]): Promise<PersistenceResult> => {
+  const response: PersistenceResult = {
     results: [],
     error: null,
   };

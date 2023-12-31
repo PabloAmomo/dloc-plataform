@@ -1,4 +1,4 @@
-import { DatabaseResult } from '../infraestucture/models/DatabaseResult';
+import { PersistenceResult } from '../infraestucture/models/PersistenceResult';
 import { PositionPacket } from './PositionPacket';
 
 export interface Persistence {
@@ -15,20 +15,20 @@ export interface GetPersistenceName {
   (): string;
 }
 export interface AddDiscarted {
-   (imei: string, remoteAddress: string, reason: string, data: string): Promise<DatabaseResult>;
+   (imei: string, remoteAddress: string, reason: string, data: string): Promise<PersistenceResult>;
 }
 export interface AddPosition {
-  (locationPacket: PositionPacket):  Promise<DatabaseResult>;
+  (locationPacket: PositionPacket):  Promise<PersistenceResult>;
 }
 export interface AddBatteryLevel {
-  (imei: string, remoteAddress: string, batteryLevel: number):  Promise<DatabaseResult>;
+  (imei: string, remoteAddress: string, batteryLevel: number):  Promise<PersistenceResult>;
 }
 export interface AddHistory {
-  (imei: string, remoteAddress: string, data: string):  Promise<DatabaseResult>;
+  (imei: string, remoteAddress: string, data: string):  Promise<PersistenceResult>;
 }
 export interface UpdateDevice {
-  (locationPacket: PositionPacket):  Promise<DatabaseResult>;
+  (locationPacket: PositionPacket):  Promise<PersistenceResult>;
 }
 export interface UpdateLastActivity {
-  (imei: string, remoteAddress: string):  Promise<DatabaseResult>;
+  (imei: string, remoteAddress: string):  Promise<PersistenceResult>;
 }
