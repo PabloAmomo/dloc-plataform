@@ -2,5 +2,6 @@ SERVER:
   Pendiente ver test TRVYP15
 
 API:
-  All !!!
+  Implemente interval on GetPositions (persistence -> mysql -> getPositions)
+  Add test
   

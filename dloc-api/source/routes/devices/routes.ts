@@ -1,0 +1,25 @@
+import express from 'express';
+import { getDevices } from './getDevices';
+import { getDevice } from './getDevice';
+import { getPersistence } from '../../persistence/persistence';
+const routers = express.Router();
+
+routers.get('/devices', (req, res, next) => {
+  const imei: string = req.query?.id?.toString() ?? '';
+  /* Get all devices or device by imei */
+  if (imei) getDevice(imei, getPersistence()).then((response) => res.status(response.code).json(response.result));
+  else getDevices(getPersistence()).then((response) => res.status(response.code).json(response.result));
+});
+
+routers.get('/devices/all', (req, res, next) => {
+  getDevices(getPersistence()).then((response) => res.status(response.code).json(response.result));
+});
+
+routers.get('/devices/:id', (req, res, next) => {
+  const imei: string = req.params?.id;
+  /** validate imei and get locations */
+  if (!imei) res.status(400).json({ error: 'imei is required' });
+  else getDevice(imei, getPersistence()).then((response) => res.status(response.code).json(response.result));
+});
+
+export default routers;

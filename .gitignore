@@ -1,5 +1,4 @@
 dloc-database/**
-dloc-api/**
 **/node_modules
 **/.env
 **/build
