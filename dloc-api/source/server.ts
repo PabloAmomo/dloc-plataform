@@ -33,17 +33,25 @@ router.use((req, res) => {
   });
 });
 
-
 /** Server */
 const httpServer = http.createServer(router);
 const PORT: any = process.env.PORT ?? 8008;
 const ROOT_PATH: any = process.env.ROOT_PATH ?? '';
+const persistence = getPersistence();
 
 /** Banner */
 printMessage('--------------------------------------------------------------------------');
 printMessage(' DLoc api listening on port ' + PORT);
 printMessage('--------------------------------------------------------------------------');
-printMessage(`Persistance [${getPersistence().getPersistenceName()}]`);
+
+/** Check persistence */
+printMessage(`Persistence: [${persistence.getPersistenceName()}]`);
+persistence.health().then((result) => {
+  if (result.error) {
+    printMessage(`Persistence not ready: ${result.error.message}`);
+    process.exit(1);
+  }
+});
 
 /** Start server */
 httpServer.listen(PORT, () => printMessage(`ready... (Health check: http://localhost:${PORT}${ROOT_PATH}/health)`));
