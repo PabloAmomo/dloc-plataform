@@ -23,17 +23,17 @@ services:
       timeout: 3s
       retries: 3
 
-  # dloc-server:
-  #   image: dloc-server
-  #   restart: always
-  #   container_name: dloc-server
-  #   networks: ["dloc-network"]
-  #   build: ./dloc-server
-  #   ports: 
-  #     - ${PORT_SERVER}:8080
-  #   # depends_on:
-  #   #   dloc-database:
-  #   #     condition: service_healthy
+  dloc-server:
+    image: dloc-server
+    restart: always
+    container_name: dloc-server
+    networks: ["dloc-network"]
+    build: ./dloc-server
+    ports: 
+      - ${PORT_SERVER}:8080
+    depends_on:
+      dloc-database:
+        condition: service_healthy
 
   dloc-api:
     image: dloc-api
