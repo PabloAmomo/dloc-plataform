@@ -31,9 +31,21 @@ services:
     build: ./dloc-server
     ports: 
       - ${PORT_SERVER}:8080
-    depends_on:
-      dloc-database:
-        condition: service_healthy
-       
+    # depends_on:
+    #   dloc-database:
+    #     condition: service_healthy
+
+  dloc-api:
+    image: dloc-api
+    restart: always
+    container_name: dloc-api
+    networks: ["dloc-network"]
+    build: ./dloc-api
+    ports: 
+      - ${PORT_API}:8080
+    # depends_on:
+    #   dloc-database:
+    #     condition: service_healthy
+
 networks:
   dloc-network:
