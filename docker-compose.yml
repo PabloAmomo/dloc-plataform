@@ -18,22 +18,22 @@ services:
     volumes:
       - ./dloc-database:/var/lib/mysql
     healthcheck:
-      test: "mysql -u$$MYSQL_USER -p$$MYSQL_PASSWORD -e 'SELECT 1'"
+      test: "mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e 'SELECT 1'"
       interval: 1s
       timeout: 3s
       retries: 3
 
-  dloc-server:
-    image: dloc-server
-    restart: always
-    container_name: dloc-server
-    networks: ["dloc-network"]
-    build: ./dloc-server
-    ports: 
-      - ${PORT_SERVER}:8080
-    # depends_on:
-    #   dloc-database:
-    #     condition: service_healthy
+  # dloc-server:
+  #   image: dloc-server
+  #   restart: always
+  #   container_name: dloc-server
+  #   networks: ["dloc-network"]
+  #   build: ./dloc-server
+  #   ports: 
+  #     - ${PORT_SERVER}:8080
+  #   # depends_on:
+  #   #   dloc-database:
+  #   #     condition: service_healthy
 
   dloc-api:
     image: dloc-api
@@ -43,9 +43,36 @@ services:
     build: ./dloc-api
     ports: 
       - ${PORT_API}:8080
-    # depends_on:
-    #   dloc-database:
-    #     condition: service_healthy
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1" 
+      interval: 1s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      dloc-database:
+        condition: service_healthy
+
+  dloc-frontend:
+    image: dloc-frontend
+    restart: always
+    container_name: dloc-frontend
+    networks: ["dloc-network"]
+    build: ./dloc-frontend
+    depends_on:
+      dloc-api:
+        condition: service_healthy
+
+  dloc-ngnix:
+    image: dloc-ngnix
+    restart: always
+    container_name: dloc-ngnix
+    networks: ["dloc-network"]
+    build: ./dloc-ngnix
+    ports:
+      - ${PORT_NGNIX}:80
+    depends_on:
+      dloc-api:
+        condition: service_healthy
 
 networks:
   dloc-network:
