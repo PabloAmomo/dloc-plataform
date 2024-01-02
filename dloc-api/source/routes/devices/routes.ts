@@ -11,10 +11,6 @@ routers.get('/devices', (req, res, next) => {
   else getDevices(getPersistence()).then((response) => res.status(response.code).json(response.result));
 });
 
-routers.get('/devices/all', (req, res, next) => {
-  getDevices(getPersistence()).then((response) => res.status(response.code).json(response.result));
-});
-
 routers.get('/devices/:id', (req, res, next) => {
   const imei: string = req.params?.id;
   /** validate imei and get locations */
