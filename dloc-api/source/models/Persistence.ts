@@ -1,3 +1,6 @@
+import { GetDeviceResult } from '../persistence/models/GetDeviceResult';
+import { GetDevicesResult } from '../persistence/models/GetDevicesResult';
+import { GetPositionsResult } from '../persistence/models/GetPositionsResult';
 import { PersistenceResult } from './PersistenceResult'
 
 export interface Persistence {
@@ -5,7 +8,6 @@ export interface Persistence {
   getDevice: getDevice;
   getDevices: getDevices;
   getPositions: getPositions;
-  getUser: getUser;
   health: health;
 }
 
@@ -14,18 +16,14 @@ export interface GetPersistenceName {
 }
 
 export interface getDevice {
-   (imei: string): Promise<PersistenceResult>;
+   (imei: string): Promise<GetDeviceResult>;
 }
 export interface getDevices {
-  (): Promise<PersistenceResult>;
+  (): Promise<GetDevicesResult>;
 }
 
 export interface getPositions {
-  (imei: string, interval: number): Promise<PersistenceResult>;
-}
-
-export interface getUser {
-  (id: number): Promise<PersistenceResult>;
+  (imei: string, interval: number): Promise<GetPositionsResult>;
 }
 
 export interface health {
