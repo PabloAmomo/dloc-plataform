@@ -8,7 +8,7 @@ const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 const getDevice = async (imei: string): Promise<GetDeviceResult> => {
   const params: any[] = [imei];
 
-  const sql = `SELECT imei, lat, lng, speed, directionAngle, gsmSignal, batteryLevel, lastPositionUTC, lastVisibilityUTC
+  const sql = `SELECT imei, lat, lng, speed, directionAngle, gsmSignal, batteryLevel, lastPositionUTC, lastVisibilityUTC, params
                FROM device WHERE imei = ? LIMIT 1;`;
 
   /** Execute query */

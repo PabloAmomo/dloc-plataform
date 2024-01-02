@@ -8,7 +8,8 @@ const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 const getDevices = async () : Promise<GetDevicesResult> => { 
   const params: any[] = [];
 
-  const sql = `SELECT * FROM device ORDER BY imei;`;
+  const sql = `SELECT imei, lat, lng, speed, directionAngle, gsmSignal, batteryLevel, lastPositionUTC, lastVisibilityUTC, params 
+                FROM device ORDER BY imei;`;
 
   /** Execute query */
   const response: GetDevicesResult = await mySqlQueryAsync(connectionConfig, sql, params).then((response) => {

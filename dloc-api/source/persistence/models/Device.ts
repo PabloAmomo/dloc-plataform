@@ -8,4 +8,5 @@ export interface Device {
   batteryLevel: number;
   lastPositionUTC: string;
   lastVisibilityUTC: string; 
+  params: string;
 }
