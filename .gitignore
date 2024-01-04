@@ -2,8 +2,5 @@ dloc-database/**
 **/node_modules
 **/.env
 **/build
-**/dloc-frontend
-**/dloc-ngnix
-
 
 

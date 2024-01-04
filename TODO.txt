@@ -1,7 +1,10 @@
 SERVER:
-  Pendiente ver test TRVYP15
+  Pending review of test TRVYP15
 
 API:
-  Implemente interval on GetPositions (persistence -> mysql -> getPositions)
+  Create query to retrieve positions for all devices
   Add test
-  
+
+FRONTEND:
+  Modify functionality to obtain positions for all devices in interval queries
+  Enable selection of time interval and display the device's path

@@ -1,6 +1,15 @@
-# DLOC Server
+# DLOC Plataform
 
 This project is a robust and efficient server designed to receive and process GPS messages from GF-07, GF-09, GF-11, GF-21, and GF-22 models. It is a comprehensive solution that facilitates the collection and management of real-time location data, providing a solid foundation for GPS tracking applications, security, and fleet management.
+
+## DLOC Server
+Server to receive information from GPS Devices.
+
+## DLOC Api
+Simple API for consuming data produced by the DLOC-SERVER
+
+## DLOC Front End
+Front end example for using the DLOC Platform (React App)
 
 # Database
 

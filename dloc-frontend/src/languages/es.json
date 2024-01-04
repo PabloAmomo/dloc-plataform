@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "noPositionReceived": "Posición no recibida",
+    "noDevicesReceived":  "No hay dispositivos disponibles",
+    "noUserDataReceived": "No se han recibido datos del usuario"
+  },
+  "calculateTime": {
+    "prefix": "Hace",
+    "postfix": "",
+    "now": "ahora mismo",
+    "year": "año",
+    "years": "años",
+    "month": "mes",
+    "months": "meses",
+    "day": "día",
+    "days": "días",
+    "hour": "hora",
+    "hours": "horas",
+    "minute": "min.",
+    "minutes": "min."
+  },
+  "all": "Todos",
+  "none": "Ninguno",
+  "lastTime": "Última hora",
+  "lastVisibility": "Última visibilidad",
+  "battery": "Batería",
+  "dateString": "{day}/{month}/{fullYear} {hour}:{minute}:{second}"
+}
