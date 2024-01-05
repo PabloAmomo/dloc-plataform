@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { Device } from 'models/Device';
 import { GetPositionsResult } from 'models/GetPositionsResult';
 import { LatLng } from 'models/LatLng';
@@ -13,6 +12,7 @@ import GoogleMap from 'components/GoogleMap/GoogleMap';
 import logError from 'functions/logError';
 import React, { useEffect, useRef, useState } from 'react';
 import userSettingsGet from 'functions/userSettingsGet';
+import ContainerAllScreen from 'components/ContainerAllScreen/ContainerAllScreen';
 
 function GeoMap() {
   const userSettings: UserSettings = userSettingsGet();
@@ -46,10 +46,7 @@ function GeoMap() {
       (response: GetPositionsResult) => {
         try {
           // TODO: Add error handler if response has error...
-          if (response?.error) {
-            addSnackbar && addSnackbar('error', response.error.message);
-            return;
-          }
+          if (response?.error) throw new Error(response.error.message);
 
           /** Update devices */
           var newDevices: Device[] = devicesProvider.getDevices();
@@ -91,11 +88,9 @@ function GeoMap() {
   /** Draw the Map */
   return (
     <>
-      <Box sx={{ display: 'flex', position: 'relative', flexDirection: 'column', alignItems: 'center', height: '100%', width: '100%' }}>
-        <Box sx={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%' }}>
-          <GoogleMap isLoading={isLoading} myPosition={myPosition} showDevices={showDevices} />
-        </Box>
-      </Box>
+      <ContainerAllScreen>
+        <GoogleMap isLoading={isLoading} myPosition={myPosition} showDevices={showDevices} />
+      </ContainerAllScreen>
 
       <GeoMapBottomMenu
         hideIntervalSelector

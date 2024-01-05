@@ -11,11 +11,9 @@ import { Device } from 'models/Device';
 import MarkerWithBattery from 'components/MarkerWithbattery/MarkerWithBattery';
 import { useDevicesContext } from 'context/DevicesProvider';
 import { useUserContext } from 'context/UserProvider';
-import createInfoWindow from 'functions/createInfoWindow';
-import formatDate from 'functions/formatDate';
 import { useTranslation } from 'react-i18next';
 import googleMapFitDevices from 'functions/googleMapFitDevices';
-import convertUTCDateToLocalDate from 'functions/convertUTCDateToLocalDate';
+import showDeviceInfoWindow from 'functions/showDeviceInfoWindow';
 
 const containerStyle = { width: '100%', height: '100%' };
 const mapCenter = config.map.initCenter;
@@ -34,31 +32,21 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   const [markers, setMarkers] = React.useState<ReactNode[]>([]);
 
   /** Handle click on device */
-  const handleClickOnDevice = (device: Device) => {
-    if (device.lat == null || device.lng == null) return;
-    const date: string = formatDate(convertUTCDateToLocalDate(device.lastPositionUTC ?? undefined), t('dateString')) ?? '-';
-    const dateVisibility: string = formatDate(convertUTCDateToLocalDate(device.lastVisibilityUTC ?? undefined), t('dateString')) ?? '-';
-    
-    const title: string = device.params.name;
-    const battery: string = '' + (device?.batteryLevel ?? '0');
-    const content = `<div>${t('lastTime')}: <b>${date}</b></div>
-                     <div>${t('lastVisibility')}: <b>${dateVisibility}</b></div>
-                     <div>${t('battery')}: <b>${battery}%</b></div>
-                     <div>lat: <i>${device?.lat ?? '-'}</i></div>
-                     <div>lng: <i>${device?.lng ?? '-'}</i></div>`;
-    const position = new google.maps.LatLng(device.lat, device.lng);
-    currentInfoWindows.current = createInfoWindow({ open: true, title, content, position, map, currentInfoWindows: currentInfoWindows.current });
-  };
+  const handleClickOnDevice = (device: Device) => showDeviceInfoWindow(device, currentInfoWindows, map, t);
 
   /** Create Device Makers */
   useEffect(() => {
     if (!map || !isLoaded) return;
+
+    const firstTime: boolean = markers.length === 0;
+
     const markersTemp: ReactNode[] = devices.map((device: Device) => (
       <MarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
     ));
     setMarkers(markersTemp);
-    
-    googleMapFitDevices({ map, devices, isLoaded, showDevices, myPosition });
+
+    /** Fit devices in the map only 1 time */
+    firstTime && googleMapFitDevices({ map, devices, isLoaded, showDevices, myPosition });
   }, [devices, map]);
 
   /** Close info window when click on Map */
@@ -79,11 +67,10 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   const onLoad = React.useCallback((map: any) => setMap(map), []);
   const onUnmount = React.useCallback(() => setMap(null), []);
 
-  /** Loading */
-  if (!isLoaded) return <CircularLoading />;
-
   /** Draw the Map */
-  return (
+  return !isLoaded ? (
+    <CircularLoading />
+  ) : (
     <>
       <GMap
         mapContainerStyle={containerStyle}
