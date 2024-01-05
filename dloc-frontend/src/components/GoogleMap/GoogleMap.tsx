@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { config } from 'config/config';
 import { GoogleMap as GMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { LinearProgress } from '@mui/material';
@@ -36,7 +35,7 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
 
   /** Create Device Makers */
   useEffect(() => {
-    if (!map || !isLoaded) return;
+    if (!map || !isLoaded || devices.length === 0) return;
 
     const firstTime: boolean = markers.length === 0;
 
@@ -47,7 +46,8 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
 
     /** Fit devices in the map only 1 time */
     firstTime && googleMapFitDevices({ map, devices, isLoaded, showDevices, myPosition });
-  }, [devices, map]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [devices, map, isLoaded]);
 
   /** Close info window when click on Map */
   const handleOnClick = () => currentInfoWindows.current && currentInfoWindows.current.close();
