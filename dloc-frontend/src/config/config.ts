@@ -17,7 +17,7 @@ export const config :typeConfig = {
 
   googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY ?? '',
 
-  defaultInterval: 1,
+  defaultInterval: 0,
 
   debug: true,
   

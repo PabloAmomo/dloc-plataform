@@ -37,16 +37,13 @@ function GeoMap() {
 
     /** Update devices */
     if (abortAxios.current) abortAxios.current.abort();
-    abortAxios.current = undefined;
-
-    /** Update devices */
     abortAxios.current = new AbortController();
     getPositions(
       { interval: minutes, imei: '*' },
       (response: GetPositionsResult) => {
         try {
           // TODO: Add error handler if response has error...
-          if (response?.error) throw new Error(response.error.message);
+          if (response?.error) throw new Error(response.error?.message ?? response.error);
 
           /** Update devices */
           var newDevices: Device[] = devicesProvider.getDevices();

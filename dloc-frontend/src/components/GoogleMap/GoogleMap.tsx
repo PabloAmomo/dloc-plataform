@@ -37,15 +37,12 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   useEffect(() => {
     if (!map || !isLoaded || devices.length === 0) return;
 
-    const firstTime: boolean = markers.length === 0;
-
     const markersTemp: ReactNode[] = devices.map((device: Device) => (
       <MarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
     ));
     setMarkers(markersTemp);
 
-    /** Fit devices in the map only 1 time */
-    firstTime && googleMapFitDevices({ map, devices, isLoaded, showDevices, myPosition });
+    googleMapFitDevices({ map, devices, showDevices, myPosition });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 

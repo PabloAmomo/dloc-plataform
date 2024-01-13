@@ -7,6 +7,8 @@ import mySqlQueryAsync from '../functions/mySqlQueryAsync';
 import { mySqlFormatDateTime } from '../functions/mySqlFormatDateTime';
 import { handleUpdateDevice } from './handleUpdateDevice';
 import { getErrorFromPositionPacket } from '../../functions/getErrorFromPositionPacket';
+import { mySqlGetLastPosition } from '../functions/mySqlGetLastPosition';
+import { handleAddDiscarted } from './handleAddDiscarted';
 
 const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 
@@ -20,6 +22,11 @@ const handleAddPosition = async (positionPacket: PositionPacket): Promise<Persis
 
   /** Update device */
   await handleUpdateDevice(positionPacket);
+
+  /** Old packet - discard */
+  const result = await mySqlGetLastPosition(positionPacket);
+  if (result.error) return result;
+  if (result.results.length) return handleAddDiscarted(positionPacket.imei, positionPacket.remoteAddress, 'old packet', JSON.stringify(positionPacket));
 
   /** Add position */
   const params = [

@@ -4,18 +4,16 @@ import { LatLng } from 'models/LatLng';
 
 const googleMapFitDevices = ({
   map,
-  isLoaded,
   myPosition,
   showDevices,
   devices,
 }: {
   map: any;
-  isLoaded: boolean;
   myPosition: LatLng | null;
   showDevices: string[];
   devices: Device[];
 }) => {
-  if (!map || !isLoaded || !myPosition || devices.length === 0) return;
+  if (!map || devices.length === 0) return;
 
   let bounds: google.maps.LatLngBounds = new google.maps.LatLngBounds();
 
