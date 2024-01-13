@@ -1,20 +1,20 @@
 import { config } from 'config/config';
+import { Device } from 'models/Device';
 import { GoogleMap as GMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { LatLng } from 'models/LatLng';
 import { LinearProgress } from '@mui/material';
+import { useDevicesContext } from 'context/DevicesProvider';
+import { useTranslation } from 'react-i18next';
+import { useUserContext } from 'context/UserProvider';
 import CircularLoading from 'components/CircularLoading/CircularLoading';
 import ContainerTop from 'components/ContainerTop/ContainerTop';
-import React, { ReactElement, ReactNode, useEffect, useRef } from 'react';
-import { LatLng } from 'models/LatLng';
-import markerIcon from 'functions/markerIcon';
-import { Device } from 'models/Device';
-import MarkerWithBattery from 'components/MarkerWithbattery/MarkerWithBattery';
-import { useDevicesContext } from 'context/DevicesProvider';
-import { useUserContext } from 'context/UserProvider';
-import { useTranslation } from 'react-i18next';
 import googleMapFitDevices from 'functions/googleMapFitDevices';
+import markerIcon from 'functions/markerIcon';
+import MarkerWithBattery from 'components/MarkerWithbattery/MarkerWithBattery';
+import React, { ReactElement, ReactNode, useEffect, useRef } from 'react';
 import showDeviceInfoWindow from 'functions/showDeviceInfoWindow';
 
-const containerStyle = { width: '100%', height: '100%' };
+const mapContainerStyle = { width: '100%', height: '100%' };
 const mapCenter = config.map.initCenter;
 const mapOptions = { zoomControl: true, streetViewControl: false, mapTypeControl: false, fullscreenControl: false, maxZoom: config.map.maxZoom };
 const mapPOIConfig = { featureType: 'poi', stylers: [{ visibility: 'off' }] };
@@ -70,7 +70,7 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   ) : (
     <>
       <GMap
-        mapContainerStyle={containerStyle}
+        mapContainerStyle={mapContainerStyle}
         center={mapCenter}
         onLoad={onLoad}
         onUnmount={onUnmount}
