@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const menuProps = { PaperProps: { style: { width: 200 } } };
 const noBorder = { border: 0, borderWidth: '0!important' };
+const showIcon = false;
 
 const DevicesSelector = ({
   showDevices,
@@ -32,23 +33,20 @@ const DevicesSelector = ({
 
     /** All Selected */
     if (newValue.includes('0') && !showDevices.includes('0')) {
-      newValue.length = 0; 
-      newValue.push('0');
-    } 
-    /** All Unselected */
-    else if (!newValue.includes('0') && showDevices.includes('0'))  {
       newValue.length = 0;
-    } 
+      newValue.push('0');
+    } else if (!newValue.includes('0') && showDevices.includes('0')) {
+    /** All Unselected */
+      newValue.length = 0;
+    } else if (newValue.includes('0') && newValue.length > 1) {
     /** Unselect one from All Selected */
-    else if (newValue.includes('0') && newValue.length > 1) { 
       removeFromArray(newValue, '0');
       const imei = newValue[0];
-      devices.forEach((item: Device) => (imei !== item.imei) && newValue.push(item.imei));
+      devices.forEach((item: Device) => imei !== item.imei && newValue.push(item.imei));
       removeFromArray(newValue, imei);
-    } 
+    } else if (!newValue.includes('0') && newValue.length === devices.length) {
     /** All selected */
-    else if (!newValue.includes('0') && newValue.length === devices.length) { 
-      newValue.length = 0; 
+      newValue.length = 0;
       newValue.push('0');
     }
 
@@ -86,9 +84,11 @@ const DevicesSelector = ({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-      <Box sx={{ paddingTop: '12px' }}>
-        <LocationOff sx={{ fontSize: '32px', opacity: isDisabled ? 0.25 : 0.75 }} />
-      </Box>
+      {showIcon && (
+        <Box sx={{ paddingTop: '12px' }}>
+          <LocationOff sx={{ fontSize: '32px', opacity: isDisabled ? 0.25 : 0.75 }} />
+        </Box>
+      )}
       <Box>
         <FormControl
           ref={refHidden}
@@ -110,7 +110,7 @@ const DevicesSelector = ({
             onChange={handleHiddenDevicesChange}
             renderValue={(selected: string[]) => <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>{drawChips(selected)}</Box>}
             MenuProps={menuProps}
-            sx={{ '& fieldset': noBorder }}
+            sx={{ '& fieldset': noBorder, '& .MuiBox-root': { justifyContent: showIcon ? 'center' : 'end' } }}
           >
             {DeviceOptionsItems()}
           </Select>

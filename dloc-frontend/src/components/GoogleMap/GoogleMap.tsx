@@ -36,14 +36,14 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   /** Create Device Makers */
   useEffect(() => {
     if (!map || !isLoaded || devices.length === 0) return;
-
+   
     const markersTemp: ReactNode[] = devices.map((device: Device) => (
       <MarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
     ));
     setMarkers(markersTemp);
 
     googleMapFitDevices({ map, devices, showDevices, myPosition });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 
   /** Close info window when click on Map */

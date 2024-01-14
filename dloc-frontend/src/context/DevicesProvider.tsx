@@ -10,12 +10,8 @@ export function DevicesProvider({ children }: { children: any }) {
   return (
     <DevicesContext.Provider
       value={{
-        setDevices: (devices: Device[]) => {
-          setDevices(devices);
-        },
-        getDevices: () => {
-          return devices;
-        },
+        setDevices: (newDevices: Device[]) => setDevices(newDevices),
+        getDevices: () => [...devices],
         devices,
       }}
     >
