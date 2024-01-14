@@ -13,6 +13,8 @@ interface OnClick {
   (device: Device): void;
 }
 
+const secondsRedText = 120;
+
 const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnClick; }) => {
   const { t } = useTranslation();
 
@@ -22,6 +24,7 @@ const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnCli
   const location : LatLng = { lat: device.lat, lng: device.lng };
   const image: string = `images/battery/battery-${battery}.png`;
   const batteryClass: string = `batery-icon d-block${battery === 0 ? ' blink_50' : ''}`;
+  const timeColor : string = calculated.seconds > secondsRedText ? 'red' : 'inherit';
 
   const handleOnClick = () => onClick && onClick(device);
 
@@ -37,7 +40,7 @@ const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnCli
         size={72}
         onClick={handleOnClick}
         sxLine1={{ textAlign: 'center' }}
-        sxLine2={{ fontSize: '8px', textAlign: 'center', color: calculated.seconds > 10 ? 'red' : 'inherit' }}
+        sxLine2={{ fontSize: '8px', textAlign: 'center', color: timeColor }}
         position={location}
         line1={device.params.name}
         line2={calculated.text}

@@ -29,6 +29,8 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   const [map, setMap] = React.useState<any>(null);
   const [myPositionMarker, setMyPositionMarker] = React.useState<google.maps.LatLng | null>(null);
   const [markers, setMarkers] = React.useState<ReactNode[]>([]);
+  const [ zoomChanged, setZoomChanged ] = React.useState<boolean | undefined>();
+  const [ mapMoved, setMapMoved ] = React.useState<boolean | undefined>();
 
   /** Handle click on device */
   const handleClickOnDevice = (device: Device) => showDeviceInfoWindow(device, currentInfoWindows, map, t);
@@ -41,8 +43,10 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
       <MarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
     ));
     setMarkers(markersTemp);
+    
+    /** Center and bound if not zoom or map moved by user */
+    if (!zoomChanged && !mapMoved) googleMapFitDevices({ map, devices, showDevices, myPosition });
 
-    googleMapFitDevices({ map, devices, showDevices, myPosition });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 
@@ -54,9 +58,18 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
     if (myPosition && google?.maps?.LatLng) setMyPositionMarker(new google.maps.LatLng(myPosition.lat, myPosition.lng));
   }, [myPosition, map]);
 
+  /** Drag */
+  const handleOnDragEnd = () => {
+    if (!map || !isLoaded) return;
+    if (mapMoved === undefined) setMapMoved(false);
+    else if (!mapMoved) setMapMoved(true);
+  };
+
   /** Zoom (Max Zoom) */
   const handleOnZoomChanged = () => {
     if (!map || !isLoaded) return;
+    if (zoomChanged === undefined) setZoomChanged(false);
+    else if (!zoomChanged) setZoomChanged(true);
     if ((map?.getZoom() ?? 0) > config.map.maxZoom) map.setZoom(config.map.maxZoom);
   };
 
@@ -74,6 +87,7 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
         center={mapCenter}
         onLoad={onLoad}
         onUnmount={onUnmount}
+        onDragEnd={handleOnDragEnd}
         zoom={config.map.initZoom}
         onZoomChanged={handleOnZoomChanged}
         onClick={handleOnClick}

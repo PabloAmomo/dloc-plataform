@@ -110,7 +110,10 @@ const DevicesSelector = ({
             onChange={handleHiddenDevicesChange}
             renderValue={(selected: string[]) => <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>{drawChips(selected)}</Box>}
             MenuProps={menuProps}
-            sx={{ '& fieldset': noBorder, '& .MuiBox-root': { justifyContent: showIcon ? 'center' : 'end' } }}
+            sx={{ 
+              '& .MuiSelect-select': { paddingTop: '8px' },
+              '& fieldset': noBorder, '& .MuiBox-root': { justifyContent: showIcon ? 'center' : 'end' } 
+            }}
           >
             {DeviceOptionsItems()}
           </Select>

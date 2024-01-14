@@ -46,10 +46,10 @@ function GeoMapBottomMenu({
 
   return (
     <Box className="boxShadow6-inverted" sx={containerSxProps}>
-      <Grid container spacing={2} sx={{ flexWrap: 'nowrap', paddingBottom: '1rem' }}>
+      <Grid container spacing={2} sx={{ flexWrap: 'nowrap' }}>
         {/* Interval Selector */}
         {!hideIntervalSelector && (
-          <Grid item xs={'auto'} sx={{ paddingLeft: '4px!important' }}>
+          <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
             <IntervalSelector disabled={isLoading} setMinutes={setMinutes} minutes={minutes} />
           </Grid>
         )}
@@ -57,7 +57,7 @@ function GeoMapBottomMenu({
         <Grid item xs={'auto'} sx={middleSxProps} />
 
         {/* Devices Selector */}
-        <Grid item xs={'auto'} sx={{ paddingRight: '4px!important' }}>
+        <Grid item xs={'auto'} sx={{ paddingRight: '12px!important', paddingTop: '0!important' }}>
           <DevicesSelector disabled={isLoading} showDevices={showDevices} setShowDevices={setShowDevices} />
         </Grid>
       </Grid>
