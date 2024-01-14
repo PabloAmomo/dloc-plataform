@@ -21,8 +21,8 @@
   },
   "all": "All",
   "none": "None",
-  "lastTime": "Last Time",
-  "lastVisibility": "Last Visibility",
+  "lastTime": "Position",
+  "lastVisibility": "Visibility",
   "battery": "Battery",
   "dateString": "{month}/{day}/{fullYear} {hour}:{minute}:{second}"
 }
