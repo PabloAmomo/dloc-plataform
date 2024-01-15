@@ -29,6 +29,7 @@ function GeoMapBottomMenu({
   showDevices,
   setShowDevices,
   hideIntervalSelector = false,
+  hideDevicesSelector = false,
 }: {
   isLoading: boolean;
   setMinutes: CallableFunction;
@@ -36,6 +37,7 @@ function GeoMapBottomMenu({
   showDevices: string[];
   setShowDevices: CallableFunction;
   hideIntervalSelector?: boolean;
+  hideDevicesSelector?: boolean;
 }) {
   useEffect(() => {
     const userSettings: UserSettings = userSettingsGet();
@@ -57,9 +59,11 @@ function GeoMapBottomMenu({
         <Grid item xs={'auto'} sx={middleSxProps} />
 
         {/* Devices Selector */}
-        <Grid item xs={'auto'} sx={{ paddingRight: '12px!important', paddingTop: '0!important' }}>
-          <DevicesSelector disabled={isLoading} showDevices={showDevices} setShowDevices={setShowDevices} />
-        </Grid>
+        {!hideDevicesSelector && (
+          <Grid item xs={'auto'} sx={{ paddingRight: '12px!important', paddingTop: '0!important' }}>
+            <DevicesSelector disabled={isLoading} showDevices={showDevices} setShowDevices={setShowDevices} />
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

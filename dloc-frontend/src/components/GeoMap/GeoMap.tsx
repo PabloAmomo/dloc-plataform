@@ -76,7 +76,9 @@ function GeoMap() {
   useEffect(() => setIsLoading(false), [devices]);
 
   useEffect(() => {
-    getMyPosition(onGetPosition, () => onGetPosition(null));
+    try {
+      getMyPosition(onGetPosition, () => onGetPosition(null));
+    } catch (error: any) {}
     /** Update positions every 5 seconds */
     const timer = setInterval(() => setTick(Date.now()), 5000);
     return () => clearInterval(timer);
@@ -96,6 +98,7 @@ function GeoMap() {
         minutes={minutes}
         showDevices={showDevices}
         setShowDevices={setShowDevices}
+        hideDevicesSelector={devices.length === 0}
       />
     </>
   );

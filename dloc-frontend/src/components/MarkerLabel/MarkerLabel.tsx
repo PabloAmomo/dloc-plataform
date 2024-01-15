@@ -40,7 +40,10 @@ const MarkerLabel = ({
   const positionGoogle = new google.maps.LatLng(position.lat, position.lng);
   const pixelOffset = new google.maps.Size(-((size + margin * 2) / 2), 52);
 
-  const handleOnClick = () => onClick && onClick();
+  const handleOnClick = (event: any) => {
+    event.stopPropagation();
+    onClick && onClick();
+  }
 
   return (
     <InfoBox position={positionGoogle} options={{ boxClass: 'box-class-info-box', alignBottom: true, pixelOffset }}>

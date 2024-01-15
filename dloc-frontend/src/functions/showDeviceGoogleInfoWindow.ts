@@ -23,6 +23,7 @@ const showDeviceGoogleInfoWindow = (device: Device, currentInfoWindows: React.Mu
                     <div>lat: <i>${device?.lat ?? '-'}</i></div>
                     <div>lng: <i>${device?.lng ?? '-'}</i></div>`;
   const position = new google.maps.LatLng(device.lat, device.lng);
+
   if (currentInfoWindows)
     currentInfoWindows.current = createGoogleInfoWindow({ open: true, title, content, position, map, currentInfoWindows: currentInfoWindows.current });
 };

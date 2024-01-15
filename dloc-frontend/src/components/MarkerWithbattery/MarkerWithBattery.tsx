@@ -15,16 +15,16 @@ interface OnClick {
 
 const secondsRedText = 120;
 
-const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnClick; }) => {
+const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnClick }) => {
   const { t } = useTranslation();
 
   const battery = !device.batteryLevel ? 0 : device.batteryLevel >= 95 ? 10 : Math.floor(device?.batteryLevel / 10);
   const date: Date = convertUTCDateToLocalDate(device.lastPositionUTC ?? undefined);
   const calculated = calculateTime(date ?? undefined, t('calculateTime', { returnObjects: true }));
-  const location : LatLng = { lat: device.lat, lng: device.lng };
+  const location: LatLng = { lat: device.lat, lng: device.lng };
   const image: string = `images/battery/battery-${battery}.png`;
   const batteryClass: string = `batery-icon d-block${battery === 0 ? ' blink_50' : ''}`;
-  const timeColor : string = calculated.seconds > secondsRedText ? 'red' : 'inherit';
+  const timeColor: string = calculated.seconds > secondsRedText ? 'red' : 'inherit';
 
   const handleOnClick = () => onClick && onClick(device);
 
