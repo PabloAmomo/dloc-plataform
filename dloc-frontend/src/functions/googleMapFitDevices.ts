@@ -2,18 +2,8 @@ import { config } from 'config/config';
 import { Device } from 'models/Device';
 import { LatLng } from 'models/LatLng';
 
-const googleMapFitDevices = ({
-  map,
-  myPosition,
-  showDevices,
-  devices,
-}: {
-  map: any;
-  myPosition: LatLng | null;
-  showDevices: string[];
-  devices: Device[];
-}) => {
-  if (!map || devices.length === 0) return;
+const googleMapFitDevices = ({ map, myPosition, showDevices, devices }: { map: any; myPosition: LatLng | null; showDevices?: string[]; devices?: Device[] }) => {
+  if (!map || devices?.length === 0) return;
 
   let bounds: google.maps.LatLngBounds = new google.maps.LatLngBounds();
 
@@ -21,13 +11,15 @@ const googleMapFitDevices = ({
   if (myPosition) bounds.extend(new google.maps.LatLng(myPosition.lat, myPosition.lng));
 
   /** Add device positions */
-  let count : number = 0;
-  devices.forEach((device: Device) => {
-    if (showDevices.includes('0') || showDevices.includes(device.imei)) {
-      count++;
-      bounds.extend(new google.maps.LatLng(device.lat, device.lng));
-    }
-  });
+  let count: number = 0;
+  if (devices && devices?.length > 0) {
+    devices.forEach((device: Device) => {
+      if (!showDevices || showDevices.includes('0') || showDevices.includes(device.imei)) {
+        count++;
+        bounds.extend(new google.maps.LatLng(device.lat, device.lng));
+      }
+    });
+  }
 
   /** Nothing to extend */
   if (count === 0 && !myPosition) return;
@@ -35,6 +27,13 @@ const googleMapFitDevices = ({
   /** Already fitBounds - Not need to fit again */
   let boundData: { south: number; west: number; north: number; east: number } = bounds.toJSON();
   if (JSON.stringify(boundData) === JSON.stringify(new google.maps.LatLngBounds().toJSON())) return;
+
+  /** Only My Position */
+  if (count === 0 && myPosition) {
+    map.fitBounds(bounds);
+    map.setZoom(config.map.maxZoom);
+    return;
+  }
 
   /** Fit Bounds and Zoom */
   map.fitBounds(bounds);

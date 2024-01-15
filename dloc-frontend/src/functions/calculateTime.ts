@@ -1,4 +1,4 @@
-type CalculateTime = {
+export type CalculateTime = {
   text: string;
   seconds: number;
 };

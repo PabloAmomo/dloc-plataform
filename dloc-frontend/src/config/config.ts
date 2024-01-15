@@ -24,8 +24,8 @@ export const config :typeConfig = {
   map: {
     initCenter: { lat: 40.417099903, lng: -3.70357844 },
     initZoom: 6,
-    maxZoom: 20,
-    zoomNormal: 18,
+    maxZoom: 19,
+    zoomNormal: 17,
     zIndex: { endPoint: 20, startPoint: 10, pointOnTrack: 15, me: 16, }
   }
 }
