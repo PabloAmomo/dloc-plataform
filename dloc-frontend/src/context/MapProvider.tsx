@@ -5,20 +5,30 @@ import { MapProviderInterface } from 'models/MapProviderInterface';
 import { UserSettings } from 'models/UserSettings';
 import { createContext, useContext, useRef, useState } from 'react';
 
+const emptyActions = {
+  centerBounds: () => {},
+  centerMyLocation: () => {},
+  clickOnDevice: () => {},
+  mapReady: () => false,
+  clickOnMap: () => {},
+  getZoom: () => 0,
+  setZoom: () => {},
+};
+
 const MapContext = createContext<MapProviderInterface>({
   zoomChanged: undefined,
   setZoomChanged: () => {},
   mapMoved: undefined,
   setMapMoved: () => {},
   myPosition: undefined,
-  setMyPosition: () => {},  
+  setMyPosition: () => {},
   isLoading: true,
-  setIsLoading: () => {},  
+  setIsLoading: () => {},
   minutes: 0,
   setMinutes: () => {},
   showDevices: [],
   setShowDevices: () => {},
-  onActions: { current: { centerBounds: () => {}, centerMyLocation: () => {} } }
+  onActions: { current: emptyActions },
 });
 
 export function MapActionsProvider({ children }: { children: any }) {
@@ -29,7 +39,8 @@ export function MapActionsProvider({ children }: { children: any }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [minutes, setMinutes] = useState<number>(userSettings.geoMap.interval ?? 0);
   const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
-  const onActions = useRef<MapActions>({ centerBounds: () => {}, centerMyLocation: () => {} });
+
+  const onActions = useRef<MapActions>(emptyActions);
 
   return (
     <MapContext.Provider
@@ -39,14 +50,14 @@ export function MapActionsProvider({ children }: { children: any }) {
         mapMoved,
         setMapMoved,
         myPosition,
-        setMyPosition,  
-        isLoading, 
+        setMyPosition,
+        isLoading,
         setIsLoading,
         minutes,
         setMinutes,
         showDevices,
         setShowDevices,
-        onActions
+        onActions,
       }}
     >
       {children}

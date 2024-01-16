@@ -1,16 +1,16 @@
 import { config } from 'config/config';
 import { Device } from 'models/Device';
 import { GoogleMap as GMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDevicesContext } from 'context/DevicesProvider';
+import { useMapContext } from 'context/MapProvider';
 import { useTranslation } from 'react-i18next';
 import { useUserContext } from 'context/UserProvider';
 import CircularLoading from 'components/CircularLoading/CircularLoading';
 import googleMapFitDevices from 'functions/googleMapFitDevices';
-import markerIcon from 'functions/markerIcon';
 import GoogleMarkerWithBattery from 'components/GoogleMarkerWithBattery/GoogleMarkerWithBattery';
-import React, { ReactElement, ReactNode, useEffect, useRef } from 'react';
+import markerIcon from 'functions/markerIcon';
 import showDeviceGoogleInfoWindow from 'functions/showDeviceGoogleInfoWindow';
-import { useMapContext } from 'context/MapProvider';
 
 const mapContainerStyle = { width: '100%', height: '100%' };
 const mapCenter = config.map.initCenter;
@@ -23,37 +23,43 @@ const GoogleMap = () => {
   const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, myPosition, onActions, showDevices } = useMapContext();
   const { devices } = useDevicesContext();
   const { user } = useUserContext();
+  const [userDevices, setUserDevices] = useState<Device[]>([]);
+
+  /** Google Map */
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: config.googleMapsApiKey });
   const currentInfoWindows = useRef<google.maps.InfoWindow>();
-  const [map, setMap] = React.useState<any>(null);
-  const [myPositionMarker, setMyPositionMarker] = React.useState<google.maps.LatLng | null>(null);
-  const [markers, setMarkers] = React.useState<ReactNode[]>([]);
-
-  /** Handle click on device */
-  const handleClickOnDevice = (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t);
+  const [map, setMap] = useState<any>();
+  const [myPos, setMyPos] = useState<google.maps.LatLng | google.maps.LatLngLiteral | undefined>();
 
   /** Set actions for parent */
   onActions.current = {
-    centerBounds: () => {
-      googleMapFitDevices({ map, devices, showDevices, myPosition });
-    },
-    centerMyLocation: () => {
-      googleMapFitDevices({ map, myPosition });
+    clickOnDevice: (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t),
+    centerBounds: () => googleMapFitDevices({ map, devices, showDevices, myPosition }),
+    centerMyLocation: () => googleMapFitDevices({ map, myPosition }),
+    mapReady: () => map && isLoaded,
+    clickOnMap: () => currentInfoWindows.current && currentInfoWindows.current.close(),
+    getZoom: () => map?.getZoom() ?? 0,
+    setZoom: (zoom: number) => {
+      if (zoom > config.map.maxZoom) zoom = config.map.maxZoom;
+      map?.setZoom(zoom);
     },
   };
 
-  /** Create Device Makers */
+  /** My Position Change */
   useEffect(() => {
-    if (!map || !isLoaded || devices.length === 0) return;
+    if (myPosition && google?.maps?.LatLng) setMyPos(new google.maps.LatLng(myPosition.lat, myPosition.lng));
+  }, [myPosition, isLoaded, map]);
 
-    const markersTemp: ReactNode[] = devices.map((device: Device) => (
-      <GoogleMarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
-    ));
-    setMarkers(markersTemp);
+  /** Devices Change */
+  useEffect(() => {
+    if (!onActions.current.mapReady()) return;
+
+    /** Set the devices */
+    setUserDevices(devices);
 
     /** Center and bound if not zoom or map moved by user */
-    const [ oldZoomChanged, oldMapMoved ] = [ zoomChanged, mapMoved ];
-    if (!zoomChanged && !mapMoved) googleMapFitDevices({ map, devices, showDevices, myPosition });
+    const [oldZoomChanged, oldMapMoved] = [zoomChanged, mapMoved];
+    if (!zoomChanged && !mapMoved) onActions.current.centerBounds();
 
     /** Restore the user states, changed by googleMapFitDevice */
     setZoomChanged(oldZoomChanged);
@@ -62,17 +68,9 @@ const GoogleMap = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 
-  /** Close info window when click on Map */
-  const handleOnClick = () => currentInfoWindows.current && currentInfoWindows.current.close();
-
-  /** Set my position marker */
-  useEffect(() => {
-    if (myPosition && google?.maps?.LatLng) setMyPositionMarker(new google.maps.LatLng(myPosition.lat, myPosition.lng));
-  }, [myPosition, map]);
-
   /** Drag */
   const handleOnDragEnd = () => {
-    if (!map || !isLoaded) return;
+    if (!onActions.current.mapReady()) return;
 
     if (zoomChanged === undefined) setZoomChanged(false);
 
@@ -82,7 +80,7 @@ const GoogleMap = () => {
 
   /** Zoom */
   const handleOnZoomChanged = () => {
-    if (!map || !isLoaded) return;
+    if (!onActions.current.mapReady()) return;
 
     if (mapMoved === undefined) setMapMoved(false);
 
@@ -90,12 +88,13 @@ const GoogleMap = () => {
     else if (!zoomChanged) setZoomChanged(true);
 
     /** Max zoom */
-    if ((map?.getZoom() ?? 0) > config.map.maxZoom) map.setZoom(config.map.maxZoom);
+    if (onActions.current.getZoom() > config.map.maxZoom) onActions.current.setZoom(config.map.maxZoom);
   };
 
   /** Map */
-  const onLoad = React.useCallback((map: any) => setMap(map), []);
-  const onUnmount = React.useCallback(() => setMap(null), []);
+  const handleOnMapClick = (event: any) => onActions.current.clickOnMap(event);
+  const onLoad = useCallback((map: any) => setMap(map), []);
+  const onUnmount = useCallback(() => setMap(undefined), []);
 
   /** Draw the Map */
   return !isLoaded ? (
@@ -110,20 +109,20 @@ const GoogleMap = () => {
         onDragEnd={handleOnDragEnd}
         zoom={config.map.initZoom}
         onZoomChanged={handleOnZoomChanged}
-        onClick={handleOnClick}
+        onClick={handleOnMapClick}
         options={{ ...mapOptions, styles: [mapPOIConfig, mapTransitConfig] }}
       >
         {/* Device Markers */}
-        {markers &&
-          markers
-            .filter((marker: ReactNode) => showDevices.includes('0') || showDevices.includes('' + ((marker as ReactElement)?.key ?? '')))
-            .map((item: ReactNode) => item)}
+        {userDevices &&
+          userDevices
+            .filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei))
+            .map((device: Device) => <GoogleMarkerWithBattery key={`${device.imei}`} onClick={onActions.current.clickOnDevice} device={device} />)}
 
         {/* My Position Marker */}
-        {myPositionMarker && user && <Marker zIndex={config.map.zIndex.me} icon={markerIcon(user.iconOnMap)} position={myPositionMarker} />}
+        {myPos && user && <Marker zIndex={config.map.zIndex.me} icon={markerIcon(user.iconOnMap)} position={myPos} />}
       </GMap>
     </>
   );
 };
 
-export default React.memo(GoogleMap);
+export default memo(GoogleMap);
