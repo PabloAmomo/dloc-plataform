@@ -23,7 +23,7 @@ const GoogleMap = () => {
   const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, myPosition, onActions, showDevices } = useMapContext();
   const { devices } = useDevicesContext();
   const { user } = useUserContext();
-  const [userDevices, setUserDevices] = useState<Device[]>([]);
+  const [userDevices, setUserDevices] = useState<Device[]>(devices);
 
   /** Google Map */
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: config.googleMapsApiKey });

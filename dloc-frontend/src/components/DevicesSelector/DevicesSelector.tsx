@@ -20,8 +20,7 @@ const DevicesSelector = ({
   disabled?: boolean;
 }) => {
   const { t } = useTranslation();
-  const devicesProvider = useDevicesContext();
-  const devices: Device[] = devicesProvider.getDevices();
+  const { devices } = useDevicesContext();
   const refHidden = useRef<any>();
   const isDisabled = disabled || devices.length <= 1;
   const labelAll = t('all');

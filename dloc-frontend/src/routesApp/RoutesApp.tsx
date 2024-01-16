@@ -14,8 +14,8 @@ import Layout from 'templates/Layout';
 import Page404 from 'pages/Page404/Page404';
 
 function RoutesApp() {
-  const userProvider = useUserContext();
-  const devicesProvider = useDevicesContext();
+  const { setUser } = useUserContext();
+  const { setDevices } = useDevicesContext();
   const { addSnackbar } = useSnackContext();
   const { t } = useTranslation();
   const abortAxios = useRef<AbortController>();
@@ -29,7 +29,8 @@ function RoutesApp() {
 
         // Convert string params to paramr object and save it in context...
         let devices: Device[] = response.devices.map((item: Device) => ({ ...item, params: JSON.parse(item.params as any) }));
-        devicesProvider.setDevices(devices);
+        setDevices(devices);
+
       } catch (error: any) {
         addSnackbar('error', error.message);
       }
@@ -41,7 +42,7 @@ function RoutesApp() {
         // TODO: Add error handler if response has error...
         if (!response || response?.error) throw new Error(response?.error?.message ?? t('errors.noUserDataReceived'));
 
-        userProvider.setUser(response.user);
+        setUser(response.user);
       } catch (error: any) {
         addSnackbar('error', error.message);
       }

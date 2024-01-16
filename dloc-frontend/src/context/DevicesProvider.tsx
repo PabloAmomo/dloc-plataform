@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react';
 import { DevicesProviderInterface } from 'models/DevicesProviderInterface';
 import { Device } from 'models/Device';
 
-const DevicesContext = createContext<DevicesProviderInterface>({ setDevices: () => {}, getDevices: () => [], devices: [] });
+const DevicesContext = createContext<DevicesProviderInterface>({ setDevices: () => {}, devices: [] });
 
 export function DevicesProvider({ children }: { children: any }) {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -10,8 +10,7 @@ export function DevicesProvider({ children }: { children: any }) {
   return (
     <DevicesContext.Provider
       value={{
-        setDevices: (newDevices: Device[]) => setDevices(newDevices),
-        getDevices: () => [...devices],
+        setDevices,
         devices,
       }}
     >
