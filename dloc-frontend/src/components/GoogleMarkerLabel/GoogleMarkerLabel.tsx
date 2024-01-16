@@ -16,7 +16,7 @@ const sxPropsLines: SxProps = {
   justifyContent: 'center',
 };
 
-const MarkerLabel = ({
+const GoogleMarkerLabel = ({
   position,
   size = 72,
   line1,
@@ -66,4 +66,4 @@ const MarkerLabel = ({
   );
 };
 
-export default MarkerLabel;
+export default GoogleMarkerLabel;

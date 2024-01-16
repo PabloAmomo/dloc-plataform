@@ -1,5 +1,5 @@
 import { Marker } from '@react-google-maps/api';
-import MarkerLabel from 'components/MarkerLabel/MarkerLabel';
+import GoogleMarkerLabel from 'components/GoogleMarkerLabel/GoogleMarkerLabel';
 import { Box } from '@mui/material';
 import { config } from 'config/config';
 import markerIcon from 'functions/markerIcon';
@@ -15,7 +15,7 @@ interface OnClick {
 
 const secondsRedText = 120;
 
-const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnClick }) => {
+const GoogleMarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnClick }) => {
   const { t } = useTranslation();
 
   const battery = !device.batteryLevel ? 0 : device.batteryLevel >= 95 ? 10 : Math.floor(device?.batteryLevel / 10);
@@ -36,7 +36,7 @@ const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnCli
       icon={markerIcon(device.params.endTrack, { fillColor: device.params.colorLight })}
       position={location}
     >
-      <MarkerLabel
+      <GoogleMarkerLabel
         size={72}
         onClick={handleOnClick}
         sxLine1={{ textAlign: 'center' }}
@@ -48,9 +48,9 @@ const MarkerWithBattery = ({ device, onClick }: { device: Device; onClick: OnCli
         <Box sx={{ position: 'absolute', right: 4, top: '-22px' }}>
           <img className={batteryClass} src={image} alt={'Battery State'} />
         </Box>
-      </MarkerLabel>
+      </GoogleMarkerLabel>
     </Marker>
   );
 };
 
-export default MarkerWithBattery;
+export default GoogleMarkerWithBattery;

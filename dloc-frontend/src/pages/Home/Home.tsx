@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import GeoMapV2 from 'components/GeoMap/GeoMap';
+import { MapActionsProvider } from 'context/MapProvider';
 
 function Home() {
   return (
@@ -15,7 +16,9 @@ function Home() {
         alignItems: 'center',
       }}
     >
-      <GeoMapV2 />
+      <MapActionsProvider>
+        <GeoMapV2 />
+      </MapActionsProvider>
     </Box>
   );
 }

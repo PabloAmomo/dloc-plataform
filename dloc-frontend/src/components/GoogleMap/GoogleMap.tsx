@@ -1,19 +1,16 @@
 import { config } from 'config/config';
 import { Device } from 'models/Device';
 import { GoogleMap as GMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { LatLng } from 'models/LatLng';
-import { LinearProgress } from '@mui/material';
 import { useDevicesContext } from 'context/DevicesProvider';
 import { useTranslation } from 'react-i18next';
 import { useUserContext } from 'context/UserProvider';
 import CircularLoading from 'components/CircularLoading/CircularLoading';
-import ContainerTop from 'components/ContainerTop/ContainerTop';
 import googleMapFitDevices from 'functions/googleMapFitDevices';
 import markerIcon from 'functions/markerIcon';
-import MarkerWithBattery from 'components/MarkerWithbattery/MarkerWithBattery';
+import GoogleMarkerWithBattery from 'components/GoogleMarkerWithBattery/GoogleMarkerWithBattery';
 import React, { ReactElement, ReactNode, useEffect, useRef } from 'react';
 import showDeviceGoogleInfoWindow from 'functions/showDeviceGoogleInfoWindow';
-import MapButtons from 'components/MapButtons/MapButtons';
+import { useMapContext } from 'context/MapProvider';
 
 const mapContainerStyle = { width: '100%', height: '100%' };
 const mapCenter = config.map.initCenter;
@@ -21,8 +18,9 @@ const mapOptions = { zoomControl: true, streetViewControl: false, mapTypeControl
 const mapPOIConfig = { featureType: 'poi', stylers: [{ visibility: 'off' }] };
 const mapTransitConfig = { featureType: 'transit', stylers: [{ visibility: 'off' }], elementType: 'labels.icon' };
 
-const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean; myPosition: LatLng | null; showDevices: string[] }) => {
+const GoogleMap = () => {
   const { t } = useTranslation();
+  const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, myPosition, onActions, showDevices } = useMapContext();
   const { devices } = useDevicesContext();
   const { user } = useUserContext();
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: config.googleMapsApiKey });
@@ -30,23 +28,35 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   const [map, setMap] = React.useState<any>(null);
   const [myPositionMarker, setMyPositionMarker] = React.useState<google.maps.LatLng | null>(null);
   const [markers, setMarkers] = React.useState<ReactNode[]>([]);
-  const [zoomChanged, setZoomChanged] = React.useState<boolean | undefined>();
-  const [mapMoved, setMapMoved] = React.useState<boolean | undefined>();
 
   /** Handle click on device */
   const handleClickOnDevice = (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t);
+
+  /** Set actions for parent */
+  onActions.current = {
+    centerBounds: () => {
+      googleMapFitDevices({ map, devices, showDevices, myPosition });
+    },
+    centerMyLocation: () => {
+      googleMapFitDevices({ map, myPosition });
+    },
+  };
 
   /** Create Device Makers */
   useEffect(() => {
     if (!map || !isLoaded || devices.length === 0) return;
 
     const markersTemp: ReactNode[] = devices.map((device: Device) => (
-      <MarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
+      <GoogleMarkerWithBattery key={`${device.imei}`} onClick={handleClickOnDevice} device={device} />
     ));
     setMarkers(markersTemp);
 
     /** Center and bound if not zoom or map moved by user */
     if (!zoomChanged && !mapMoved) googleMapFitDevices({ map, devices, showDevices, myPosition });
+
+    /** Restore the user states, changed by googleMapFitDevice */
+    setZoomChanged(zoomChanged);
+    setMapMoved(mapMoved);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
@@ -62,37 +72,29 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
   /** Drag */
   const handleOnDragEnd = () => {
     if (!map || !isLoaded) return;
+
     if (zoomChanged === undefined) setZoomChanged(false);
+
     if (mapMoved === undefined) setMapMoved(false);
     else if (!mapMoved) setMapMoved(true);
   };
 
-  /** Zoom (Max Zoom) */
+  /** Zoom */
   const handleOnZoomChanged = () => {
     if (!map || !isLoaded) return;
+
     if (mapMoved === undefined) setMapMoved(false);
+
     if (zoomChanged === undefined) setZoomChanged(false);
     else if (!zoomChanged) setZoomChanged(true);
+
+    /** Max zoom */
     if ((map?.getZoom() ?? 0) > config.map.maxZoom) map.setZoom(config.map.maxZoom);
   };
 
   /** Map */
   const onLoad = React.useCallback((map: any) => setMap(map), []);
   const onUnmount = React.useCallback(() => setMap(null), []);
-
-  /** Set automatic bounds  */
-  const handleClickBounds = () => {
-    setZoomChanged(false);
-    setMapMoved(false);
-    googleMapFitDevices({ map, devices, showDevices, myPosition });
-  };
-
-  /** Set automatic bounds  */
-  const handleCenterMy = () => {
-    setZoomChanged(false);
-    setMapMoved(true);
-    googleMapFitDevices({ map, myPosition });
-  };
 
   /** Draw the Map */
   return !isLoaded ? (
@@ -119,14 +121,6 @@ const GoogleMap = ({ isLoading, myPosition, showDevices }: { isLoading: boolean;
         {/* My Position Marker */}
         {myPositionMarker && user && <Marker zIndex={config.map.zIndex.me} icon={markerIcon(user.iconOnMap)} position={myPositionMarker} />}
       </GMap>
-
-      {/* Action Buttons */}
-      <MapButtons clickCenterMe={handleCenterMy} clickBounds={handleClickBounds} bounds={!(mapMoved ?? false) && !(zoomChanged ?? false)} />
-
-      {/* Linear Loading */}
-      <ContainerTop height={isLoading ? 4 : 0}>
-        <LinearProgress color="primary" />
-      </ContainerTop>
     </>
   );
 };

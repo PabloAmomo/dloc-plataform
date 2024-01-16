@@ -2,7 +2,7 @@ import { config } from 'config/config';
 import { Device } from 'models/Device';
 import { LatLng } from 'models/LatLng';
 
-const googleMapFitDevices = ({ map, myPosition, showDevices, devices }: { map: any; myPosition: LatLng | null; showDevices?: string[]; devices?: Device[] }) => {
+const googleMapFitDevices = ({ map, myPosition, showDevices, devices }: { map: any; myPosition: LatLng | undefined; showDevices?: string[]; devices?: Device[] }) => {
   if (!map || devices?.length === 0) return;
 
   let bounds: google.maps.LatLngBounds = new google.maps.LatLngBounds();

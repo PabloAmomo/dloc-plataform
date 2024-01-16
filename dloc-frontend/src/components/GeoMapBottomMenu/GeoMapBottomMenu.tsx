@@ -1,6 +1,7 @@
 import { Box, Grid, SxProps } from '@mui/material';
 import DevicesSelector from 'components/DevicesSelector/DevicesSelector';
 import IntervalSelector from 'components/IntervalSelector/IntervalSelector';
+import { useMapContext } from 'context/MapProvider';
 import userSettingsGet from 'functions/userSettingsGet';
 import userSettingsSet from 'functions/userSettingsSet';
 import { UserSettings } from 'models/UserSettings';
@@ -23,22 +24,14 @@ const containerSxProps: SxProps = {
 };
 
 function GeoMapBottomMenu({
-  isLoading,
-  setMinutes,
-  minutes,
-  showDevices,
-  setShowDevices,
   hideIntervalSelector = false,
   hideDevicesSelector = false,
 }: {
-  isLoading: boolean;
-  setMinutes: CallableFunction;
-  minutes: number;
-  showDevices: string[];
-  setShowDevices: CallableFunction;
   hideIntervalSelector?: boolean;
   hideDevicesSelector?: boolean;
 }) {
+  const { isLoading, minutes, setMinutes, showDevices, setShowDevices } = useMapContext();
+
   useEffect(() => {
     const userSettings: UserSettings = userSettingsGet();
     userSettings.geoMap.showDevices = showDevices;

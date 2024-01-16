@@ -3,7 +3,6 @@ import { GetPositionsResult } from 'models/GetPositionsResult';
 import { LatLng } from 'models/LatLng';
 import { Location } from 'models/Location';
 import { useDevicesContext } from 'context/DevicesProvider';
-import { UserSettings } from 'models/UserSettings';
 import { useSnackContext } from 'context/SnackProvider';
 import GeoMapBottomMenu from 'components/GeoMapBottomMenu/GeoMapBottomMenu';
 import getMyPosition from 'functions/getMyPosition';
@@ -11,29 +10,29 @@ import getPositions from 'services/getPositions/getPositions';
 import GoogleMap from 'components/GoogleMap/GoogleMap';
 import logError from 'functions/logError';
 import React, { useEffect, useRef, useState } from 'react';
-import userSettingsGet from 'functions/userSettingsGet';
 import ContainerAllScreen from 'components/ContainerAllScreen/ContainerAllScreen';
+import ContainerTop from 'components/ContainerTop/ContainerTop';
+import { LinearProgress } from '@mui/material';
+import { useMapContext } from 'context/MapProvider';
+import GeoMapButtons from 'components/GeoMapButtons/GeoMapButtons';
 
 function GeoMap() {
-  const userSettings: UserSettings = userSettingsGet();
   const { addSnackbar } = useSnackContext();
+  const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, setMyPosition, isLoading, setIsLoading, minutes, onActions } = useMapContext();
   const { devices } = useDevicesContext();
   const devicesProvider = useDevicesContext();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [myPosition, setMyPosition] = useState<LatLng | null>(null);
-  const [minutes, setMinutes] = useState<number>(userSettings.geoMap.interval ?? 0);
-  const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
   const [tick, setTick] = useState<number>(0);
   const abortAxios = useRef<AbortController>();
+  const centerBoundsActive = !(mapMoved ?? false) && !(zoomChanged ?? false);
 
-  const onGetPosition = (position: LatLng | null) => setMyPosition(position);
+  const onGetPosition = (position: LatLng | undefined) => setMyPosition(position);
 
   /** Update all positions */
   useEffect(() => {
     setIsLoading(true);
 
     /** Update my position */
-    getMyPosition(onGetPosition, () => onGetPosition(null));
+    getMyPosition(onGetPosition, () => onGetPosition(undefined));
 
     /** Update devices */
     if (abortAxios.current) abortAxios.current.abort();
@@ -73,33 +72,53 @@ function GeoMap() {
   }, [tick]);
 
   /** Devices changed */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setIsLoading(false), [devices]);
 
   useEffect(() => {
     try {
-      getMyPosition(onGetPosition, () => onGetPosition(null));
+      getMyPosition(onGetPosition, () => onGetPosition(undefined));
     } catch (error: any) {}
     /** Update positions every 5 seconds */
     const timer = setInterval(() => setTick(Date.now()), 5000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** Set automatic bounds  */
+  const handleClickCenterBounds = () => {
+    resetZommAndMove();
+    onActions.current.centerBounds();
+  };
+
+  /** Set automatic bounds  */
+  const handleCenterMyLocation = () => {
+    resetZommAndMove();
+    onActions.current.centerMyLocation();
+  };
+
+  const resetZommAndMove = () => {
+    setZoomChanged(false);
+    setMapMoved(false);
+  };
 
   /** Draw the Map */
   return (
     <>
       <ContainerAllScreen>
-        <GoogleMap isLoading={isLoading} myPosition={myPosition} showDevices={showDevices} />
+        {/* Map */}
+        <GoogleMap />
+
+        {/* Action Buttons */}
+        <GeoMapButtons clickCenterMyLocation={handleCenterMyLocation} clickCenterBounds={handleClickCenterBounds} centerBoundsActive={centerBoundsActive} />
+
+        {/* Linear Loading */}
+        <ContainerTop height={isLoading ? 4 : 0}>
+          <LinearProgress color="primary" />
+        </ContainerTop>
       </ContainerAllScreen>
 
-      <GeoMapBottomMenu
-        hideIntervalSelector
-        isLoading={isLoading}
-        setMinutes={setMinutes}
-        minutes={minutes}
-        showDevices={showDevices}
-        setShowDevices={setShowDevices}
-        hideDevicesSelector={devices.length === 0}
-      />
+      <GeoMapBottomMenu hideIntervalSelector hideDevicesSelector={devices.length === 0} />
     </>
   );
 }
