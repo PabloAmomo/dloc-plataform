@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserContext } from 'context/UserProvider';
 import CircularLoading from 'components/CircularLoading/CircularLoading';
 import googleMapFitDevices from 'functions/googleMapFitDevices';
-import GoogleMarkerWithBattery from 'components/GoogleMarkerWithBattery/GoogleMarkerWithBattery';
+import GoogleMarkerWithBattery from 'components/Google/GoogleMarkerWithBattery/GoogleMarkerWithBattery';
 import markerIcon from 'functions/markerIcon';
 import showDeviceGoogleInfoWindow from 'functions/showDeviceGoogleInfoWindow';
 

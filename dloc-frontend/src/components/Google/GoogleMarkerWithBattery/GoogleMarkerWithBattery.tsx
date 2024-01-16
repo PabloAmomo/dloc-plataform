@@ -1,5 +1,5 @@
 import { Marker } from '@react-google-maps/api';
-import GoogleMarkerLabel from 'components/GoogleMarkerLabel/GoogleMarkerLabel';
+import GoogleMarkerLabel from 'components/Google/GoogleMarkerLabel/GoogleMarkerLabel';
 import { Box } from '@mui/material';
 import { config } from 'config/config';
 import markerIcon from 'functions/markerIcon';

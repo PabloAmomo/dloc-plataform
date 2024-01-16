@@ -1,29 +1,29 @@
 import { Device } from 'models/Device';
 import { GetPositionsResult } from 'models/GetPositionsResult';
 import { LatLng } from 'models/LatLng';
+import { LinearProgress } from '@mui/material';
 import { Location } from 'models/Location';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useDevicesContext } from 'context/DevicesProvider';
+import { useMapContext } from 'context/MapProvider';
 import { useSnackContext } from 'context/SnackProvider';
-import GeoMapBottomMenu from 'components/GeoMapBottomMenu/GeoMapBottomMenu';
-import getMyPosition from 'functions/getMyPosition';
-import getPositions from 'services/getPositions/getPositions';
-import GoogleMap from 'components/GoogleMap/GoogleMap';
-import logError from 'functions/logError';
-import React, { useEffect, useRef, useState } from 'react';
 import ContainerAllScreen from 'components/ContainerAllScreen/ContainerAllScreen';
 import ContainerTop from 'components/ContainerTop/ContainerTop';
-import { LinearProgress } from '@mui/material';
-import { useMapContext } from 'context/MapProvider';
+import GeoMapBottomMenu from 'components/GeoMapBottomMenu/GeoMapBottomMenu';
 import GeoMapButtons from 'components/GeoMapButtons/GeoMapButtons';
+import getMyPosition from 'functions/getMyPosition';
+import getPositions from 'services/getPositions/getPositions';
+import GoogleMap from 'components/Google/GoogleMap/GoogleMap';
+import logError from 'functions/logError';
 
 function GeoMap() {
-  const { addSnackbar } = useSnackContext();
-  const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, setMyPosition, isLoading, setIsLoading, minutes, onActions } = useMapContext();
-  const { devices } = useDevicesContext();
-  const devicesProvider = useDevicesContext();
   const [tick, setTick] = useState<number>(0);
+  const { addSnackbar } = useSnackContext();
+  const { devices } = useDevicesContext();
+  const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, setMyPosition, isLoading, setIsLoading, minutes, onActions } = useMapContext();
   const abortAxios = useRef<AbortController>();
   const centerBoundsActive = !(mapMoved ?? false) && !(zoomChanged ?? false);
+  const devicesProvider = useDevicesContext();
 
   /** Update my position */
   const onGetPosition = (position: LatLng | undefined) => setMyPosition(position);
@@ -125,4 +125,4 @@ function GeoMap() {
   );
 }
 
-export default React.memo(GeoMap);
+export default memo(GeoMap);
