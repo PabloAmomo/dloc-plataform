@@ -52,6 +52,7 @@ const GoogleMap = () => {
 
   /** Devices Change */
   useEffect(() => {
+    /** Exit if map not ready */
     if (!onActions.current.mapReady()) return;
 
     /** Set the devices */
@@ -87,7 +88,7 @@ const GoogleMap = () => {
     if (zoomChanged === undefined) setZoomChanged(false);
     else if (!zoomChanged) setZoomChanged(true);
 
-    /** Max zoom */
+    /** Limit to max zoom */
     if (onActions.current.getZoom() > config.map.maxZoom) onActions.current.setZoom(config.map.maxZoom);
   };
 
@@ -116,7 +117,7 @@ const GoogleMap = () => {
         {userDevices &&
           userDevices
             .filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei))
-            .map((device: Device) => <GoogleMarkerWithBattery key={`${device.imei}`} onClick={onActions.current.clickOnDevice} device={device} />)}
+            .map((device: Device) => <GoogleMarkerWithBattery key={`${device.imei}-${device.lastPositionUTC}`} onClick={onActions.current.clickOnDevice} device={device} />)}
 
         {/* My Position Marker */}
         {myPos && user && <Marker zIndex={config.map.zIndex.me} icon={markerIcon(user.iconOnMap)} position={myPos} />}
