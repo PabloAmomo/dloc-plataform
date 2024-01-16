@@ -96,7 +96,7 @@ const GoogleMap = () => {
   const onLoad = useCallback((map: any) => setMap(map), []);
   const onUnmount = useCallback(() => setMap(undefined), []);
 
-  /** Draw the Map */
+  /** Draw the Map or Loading */
   return !isLoaded ? (
     <CircularLoading />
   ) : (
