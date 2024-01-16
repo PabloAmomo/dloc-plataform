@@ -25,9 +25,26 @@ function GeoMap() {
   const abortAxios = useRef<AbortController>();
   const centerBoundsActive = !(mapMoved ?? false) && !(zoomChanged ?? false);
 
+  /** Update my position */
   const onGetPosition = (position: LatLng | undefined) => setMyPosition(position);
 
-  /** Update all positions */
+  /** Update devices */
+  const processDevices = (response: GetPositionsResult) => {
+    var newDevices: Device[] = devicesProvider.getDevices();
+    response.locations.forEach((location: Location) => {
+      for (let i = 0; i < newDevices.length; i++) {
+        if (newDevices[i].imei === location.imei) {
+          const { batteryLevel, directionAngle, gsmSignal, lat, lng, speed, lastPositionUTC, lastVisibilityUTC } = location;
+          Object.assign(newDevices[i], { batteryLevel, directionAngle, gsmSignal, lat, lng, speed, lastPositionUTC, lastVisibilityUTC });
+          break;
+        }
+      }
+    });
+    /** Set new devices */
+    devicesProvider.setDevices(newDevices);
+  };
+
+  /** Update all device positions */
   useEffect(() => {
     setIsLoading(true);
 
@@ -35,8 +52,6 @@ function GeoMap() {
     getMyPosition(onGetPosition, () => onGetPosition(undefined));
 
     /** Update devices */
-    if (abortAxios.current) abortAxios.current.abort();
-    abortAxios.current = new AbortController();
     getPositions(
       { interval: minutes, imei: '*' },
       (response: GetPositionsResult) => {
@@ -44,29 +59,15 @@ function GeoMap() {
           // TODO: Add error handler if response has error...
           if (response?.error) throw new Error(response.error?.message ?? response.error);
 
-          /** Update devices */
-          var newDevices: Device[] = devicesProvider.getDevices();
-          response.locations.forEach((location: Location) => {
-            for (let i = 0; i < newDevices.length; i++) {
-              if (newDevices[i].imei === location.imei) {
-                const { batteryLevel, directionAngle, gsmSignal, lat, lng, speed, lastPositionUTC, lastVisibilityUTC } = location;
-                Object.assign(newDevices[i], { batteryLevel, directionAngle, gsmSignal, lat, lng, speed, lastPositionUTC, lastVisibilityUTC });
-                break;
-              }
-            }
-          });
-
-          /** Set new devices */
-          devicesProvider.setDevices(newDevices);
+          processDevices(response);
         } catch (error: any) {
           addSnackbar && addSnackbar('error', error.message ?? error);
           logError(error.message, error);
         } finally {
-          abortAxios.current = undefined;
           setIsLoading(false);
         }
       },
-      abortAxios.current
+      abortAxios
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
@@ -91,12 +92,13 @@ function GeoMap() {
     onActions.current.centerBounds();
   };
 
-  /** Set automatic bounds  */
+  /** Center on my location  */
   const handleCenterMyLocation = () => {
     resetZommAndMove();
     onActions.current.centerMyLocation();
   };
 
+  /** Reset zoom and move flags */
   const resetZommAndMove = () => {
     setZoomChanged(false);
     setMapMoved(false);

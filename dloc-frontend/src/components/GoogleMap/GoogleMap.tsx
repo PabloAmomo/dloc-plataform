@@ -52,11 +52,12 @@ const GoogleMap = () => {
     setMarkers(markersTemp);
 
     /** Center and bound if not zoom or map moved by user */
+    const [ oldZoomChanged, oldMapMoved ] = [ zoomChanged, mapMoved ];
     if (!zoomChanged && !mapMoved) googleMapFitDevices({ map, devices, showDevices, myPosition });
 
     /** Restore the user states, changed by googleMapFitDevice */
-    setZoomChanged(zoomChanged);
-    setMapMoved(mapMoved);
+    setZoomChanged(oldZoomChanged);
+    setMapMoved(oldMapMoved);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);

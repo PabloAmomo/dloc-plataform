@@ -3,7 +3,7 @@ import { GetDevicesResult } from 'models/GetDevicesResult';
 import { GetUserResult } from 'models/GetUserResult';
 import { Routes, Route } from 'react-router-dom';
 import { useDevicesContext } from 'context/DevicesProvider';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSnackContext } from 'context/SnackProvider';
 import { useTranslation } from 'react-i18next';
 import { useUserContext } from 'context/UserProvider';
@@ -18,6 +18,7 @@ function RoutesApp() {
   const devicesProvider = useDevicesContext();
   const { addSnackbar } = useSnackContext();
   const { t } = useTranslation();
+  const abortAxios = useRef<AbortController>();
 
   /** Get devices and user data from API (First Load) */
   useEffect(() => {
@@ -32,7 +33,8 @@ function RoutesApp() {
       } catch (error: any) {
         addSnackbar('error', error.message);
       }
-    });
+    },
+    abortAxios);
 
     getUser({}, (response: GetUserResult) => {
       try {
