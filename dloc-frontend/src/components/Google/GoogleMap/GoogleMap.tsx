@@ -31,11 +31,20 @@ const GoogleMap = () => {
   const [map, setMap] = useState<any>();
   const [myPos, setMyPos] = useState<google.maps.LatLng | google.maps.LatLngLiteral | undefined>();
 
+  /** Center and bound */
+  const googleFitAndZoom = (zoomChangeState: boolean, mapMovedState: boolean, options: any) => {
+    setZoomChanged(zoomChangeState);
+    setMapMoved(mapMovedState);
+    googleMapFitDevices(options);
+    setZoomChanged(zoomChangeState);
+    setMapMoved(mapMovedState);
+  };
+
   /** Set actions for parent */
   onActions.current = {
     clickOnDevice: (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t),
-    centerBounds: () => googleMapFitDevices({ map, devices, showDevices, myPosition }),
-    centerMyLocation: () => googleMapFitDevices({ map, myPosition }),
+    centerBounds: (zoomChangeState: boolean, mapMovedState: boolean) => googleFitAndZoom(zoomChangeState, mapMovedState, { map, devices, showDevices, myPosition }),
+    centerMyLocation: (zoomChangeState: boolean, mapMovedState: boolean) => googleFitAndZoom(zoomChangeState, mapMovedState, { map, myPosition }),
     mapReady: () => map && isLoaded,
     clickOnMap: () => currentInfoWindows.current && currentInfoWindows.current.close(),
     getZoom: () => map?.getZoom() ?? 0,
@@ -59,12 +68,7 @@ const GoogleMap = () => {
     setUserDevices(devices);
 
     /** Center and bound if not zoom or map moved by user */
-    const [oldZoomChanged, oldMapMoved] = [zoomChanged, mapMoved];
-    if (!zoomChanged && !mapMoved) onActions.current.centerBounds();
-
-    /** Restore the user states, changed by googleMapFitDevice */
-    setZoomChanged(oldZoomChanged);
-    setMapMoved(oldMapMoved);
+    if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
@@ -117,7 +121,9 @@ const GoogleMap = () => {
         {userDevices &&
           userDevices
             .filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei))
-            .map((device: Device) => <GoogleMarkerWithBattery key={`${device.imei}-${device.lastPositionUTC}`} onClick={onActions.current.clickOnDevice} device={device} />)}
+            .map((device: Device) => (
+              <GoogleMarkerWithBattery key={`${device.imei}-${device.lastPositionUTC}`} onClick={onActions.current.clickOnDevice} device={device} />
+            ))}
 
         {/* My Position Marker */}
         {myPos && user && <Marker zIndex={config.map.zIndex.me} icon={markerIcon(user.iconOnMap)} position={myPos} />}
