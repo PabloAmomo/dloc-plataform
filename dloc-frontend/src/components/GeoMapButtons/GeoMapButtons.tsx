@@ -6,11 +6,16 @@ import { useMapContext } from 'context/MapProvider';
 const buttonContainerProps: SxProps = { backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: '50%', ml: 1 };
 
 const GeoMapButtons = () => {
-  const { zoomChanged, mapMoved, onActions } = useMapContext();
+  const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved } = useMapContext();
   const boundColor: string = (mapMoved ?? false) || (zoomChanged ?? false) ? 'red' : 'inherit';
 
   /** Set automatic bounds  */
-  const handleClickCenterBounds = () => onActions.current.centerBounds(false, false);
+  const handleClickCenterBounds = () => {
+    if (!zoomChanged && !mapMoved) {
+      setZoomChanged(true);
+      setMapMoved(true);
+    } else onActions.current.centerBounds(false, false);
+  };
 
   /** Center on my location  */
   const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, false);

@@ -43,7 +43,8 @@ const GoogleMap = () => {
   /** Set actions for parent */
   onActions.current = {
     clickOnDevice: (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t),
-    centerBounds: (zoomChangeState: boolean, mapMovedState: boolean) => googleFitAndZoom(zoomChangeState, mapMovedState, { map, devices, showDevices, myPosition }),
+    centerBounds: (zoomChangeState: boolean, mapMovedState: boolean) =>
+      googleFitAndZoom(zoomChangeState, mapMovedState, { map, devices, showDevices, myPosition }),
     centerMyLocation: (zoomChangeState: boolean, mapMovedState: boolean) => googleFitAndZoom(zoomChangeState, mapMovedState, { map, myPosition }),
     mapReady: () => map && isLoaded,
     clickOnMap: () => currentInfoWindows.current && currentInfoWindows.current.close(),
@@ -63,13 +64,10 @@ const GoogleMap = () => {
   useEffect(() => {
     /** Exit if map not ready */
     if (!onActions.current.mapReady()) return;
-
     /** Set the devices */
     setUserDevices(devices);
-
     /** Center and bound if not zoom or map moved by user */
     if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 
@@ -87,13 +85,16 @@ const GoogleMap = () => {
   const handleOnZoomChanged = () => {
     if (!onActions.current.mapReady()) return;
 
+    /** Limit to max zoom */
+    if (onActions.current.getZoom() > config.map.maxZoom) {
+      onActions.current.setZoom(config.map.maxZoom);
+      return;
+    }
+
     if (mapMoved === undefined) setMapMoved(false);
 
     if (zoomChanged === undefined) setZoomChanged(false);
     else if (!zoomChanged) setZoomChanged(true);
-
-    /** Limit to max zoom */
-    if (onActions.current.getZoom() > config.map.maxZoom) onActions.current.setZoom(config.map.maxZoom);
   };
 
   /** Map */
