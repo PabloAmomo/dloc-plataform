@@ -75,8 +75,7 @@ const GoogleMap = () => {
   const handleOnDragEnd = () => {
     if (!onActions.current.mapReady()) return;
 
-    if (zoomChanged === undefined) setZoomChanged(false);
-
+    // if (zoomChanged === undefined) setZoomChanged(false);
     if (mapMoved === undefined) setMapMoved(false);
     else if (!mapMoved) setMapMoved(true);
   };
@@ -91,8 +90,7 @@ const GoogleMap = () => {
       return;
     }
 
-    if (mapMoved === undefined) setMapMoved(false);
-
+    // if (mapMoved === undefined) setMapMoved(false);
     if (zoomChanged === undefined) setZoomChanged(false);
     else if (!zoomChanged) setZoomChanged(true);
   };

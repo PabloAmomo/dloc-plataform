@@ -2,7 +2,7 @@
   --top-menu-height: 64px;
   --bottom-menu-height: 72px;
 }
-*:focus-visible {
+:focus-visible {
   outline: none !important;
 }
 
