@@ -5,7 +5,7 @@ import createGoogleInfoWindow from './createGoogleInfoWindow';
 import calculateTime from './calculateTime';
 import { MapPath } from 'models/MapPath';
 
-const showDeviceGoogleInfoWindow = (device: Device, currentInfoWindows: React.MutableRefObject<google.maps.InfoWindow | undefined>, map: any, t: any, deviceMapPath : MapPath | undefined) => {
+const showDeviceGoogleInfoWindow = (device: Device, currentInfoWindows: React.MutableRefObject<google.maps.InfoWindow | undefined>, map: any, t: any, deviceMapPath : MapPath | undefined, showDistance : boolean) => {
   if (device.lat == null || device.lng == null) return;
   const datePosition: Date = convertUTCDateToLocalDate(device.lastPositionUTC ?? undefined);
   const dateVisibility: Date = convertUTCDateToLocalDate(device.lastVisibilityUTC ?? undefined);
@@ -17,8 +17,10 @@ const showDeviceGoogleInfoWindow = (device: Device, currentInfoWindows: React.Mu
 
   const title: string = device.params.name;
   const battery: string = '' + (device?.batteryLevel ?? '0');
+  const distance: string = `<div>${t('distance')}: <b>${deviceMapPath?.distance?.toFixed(0) ?? 0} m</b></div>`;
+  
   const content = ` <div>${t('lastTime')}: <b>${datePositionText}</b> ${calculatedTimePosition}</div>
-                    <div>${t('distance')}: <b>${deviceMapPath?.distance?.toFixed(0) ?? 0} m</b></div>
+                    ${showDistance ? distance : ''}
                     <div>${t('battery')}: <b>${battery}%</b></div>
                     <div>&nbsp;</div>
                     <div>${t('lastVisibility')}: <b>${dateVisibilityText}</b> ${calculatedTimeVisibility}</div>

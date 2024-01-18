@@ -8,4 +8,5 @@ export interface MapActions {
   clickOnMap: (event: any) => void;
   getZoom: () => number;
   setZoom: (zoom: number) => void;
+  showPath: (show: boolean) => void;
 }

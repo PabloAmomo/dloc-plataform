@@ -13,6 +13,8 @@ export interface MapProviderInterface {
   setMyPosition: CallableFunction,  
   isLoading: boolean,
   setIsLoading: CallableFunction,
+  showPath: boolean,
+  setShowPath: CallableFunction,
   minutes: number,
   setMinutes: CallableFunction,
   showDevices: string[],

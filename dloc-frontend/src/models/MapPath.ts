@@ -7,5 +7,6 @@ export type MapPath = {
   strokeOpacity: number;
   path: [LatLng, LatLng][];
   lastPosistion: LatLng;
+  lastPositionUTC: string;
   distance: number;
 };

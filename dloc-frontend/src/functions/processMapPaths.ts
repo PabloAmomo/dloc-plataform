@@ -4,6 +4,7 @@ import { MapPath } from 'models/MapPath';
 import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
 
 const lineOptions = { strokeWeight: 3, strokeOpacity: 0.25 };
+const maxPathLength = 100;
 const simulation = false;
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
@@ -19,6 +20,7 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
     if (index === -1) {
       newMapPaths.push({
         imei: device.imei,
+        lastPositionUTC: device.lastPositionUTC,
         path: [],
         lastPosistion: { lat: device.lat, lng: device.lng },
         color: device.params.pathColor,
@@ -28,14 +30,17 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
       continue;
     }
 
-    /** Same position, exit */
-    if (!simulation && newMapPaths[index].lastPosistion.lat === device.lat && newMapPaths[index].lastPosistion.lng === device.lng) continue;
+    /** On simulation, update lastPositionUTC */
+    if (simulation) newMapPaths[index].lastPositionUTC = new Date().toISOString();
+
+    /** Same date time, exit */
+    if (newMapPaths[index].lastPositionUTC === device.lastPositionUTC) continue;
 
     /** Calculate start and end */
     const start: LatLng = newMapPaths[index].lastPosistion;
     const end: LatLng = !simulation
       ? { lat: device.lat, lng: device.lng }
-      : { lat: newMapPaths[index].lastPosistion.lat + 0.001, lng: newMapPaths[index].lastPosistion.lng + 0.001 };
+      : { lat: start.lat + 0.001, lng: start.lng + 0.001 };
 
     // Calculate distance n meter bettween start and end lat and lng position
     const distance = getDistanceFromLatLonInMeters(start.lat, start.lng, end.lat, end.lng);
@@ -44,6 +49,17 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
     newMapPaths[index].distance += distance;
     newMapPaths[index].path.push([start, end]);
     newMapPaths[index].lastPosistion = end;
+
+    /** Remove first path if path length is greater than maxPathLength and discount distance */
+    if (newMapPaths[index].path.length > maxPathLength) {
+      newMapPaths[index].distance -= getDistanceFromLatLonInMeters(
+        newMapPaths[index].path[0][0].lat,
+        newMapPaths[index].path[0][0].lng,
+        newMapPaths[index].path[0][1].lat,
+        newMapPaths[index].path[0][1].lng,
+      );
+      newMapPaths[index].path.shift();
+    }
   }
   /** Return new mapPaths */
   return newMapPaths;

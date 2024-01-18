@@ -17,6 +17,7 @@ const emptyActions = {
   clickOnMap: () => {},
   getZoom: () => 0,
   setZoom: () => {},
+  showPath: () => {},
 };
 
 const MapContext = createContext<MapProviderInterface>({
@@ -28,6 +29,8 @@ const MapContext = createContext<MapProviderInterface>({
   setMyPosition: () => {},
   isLoading: true,
   setIsLoading: () => {},
+  showPath: false,
+  setShowPath: () => {},
   minutes: 0,
   setMinutes: () => {},
   showDevices: [],
@@ -43,6 +46,7 @@ export function MapActionsProvider({ children }: { children: any }) {
   const [mapMoved, setMapMoved] = useState<boolean | undefined>();
   const [myPosition, setMyPosition] = useState<LatLng | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showPath, setShowPath] = useState<boolean>(false);
   const [minutes, setMinutes] = useState<number>(userSettings.geoMap.interval ?? 0);
   const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
   const [tick, setTick] = useState<number>(0);
@@ -77,6 +81,8 @@ export function MapActionsProvider({ children }: { children: any }) {
         setMyPosition,
         isLoading,
         setIsLoading,
+        showPath,
+        setShowPath,
         minutes,
         setMinutes,
         showDevices,
