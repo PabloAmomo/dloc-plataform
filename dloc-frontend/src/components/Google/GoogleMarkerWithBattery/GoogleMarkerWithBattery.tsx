@@ -33,7 +33,7 @@ const GoogleMarkerWithBattery = ({ device, onClick }: { device: Device; onClick:
       onClick={handleOnClick}
       zIndex={config.map.zIndex.endPoint}
       title={device.params.name}
-      icon={markerIcon(device.params.endTrack, { fillColor: device.params.colorLight })}
+      icon={markerIcon(device.params.endTrack, { fillColor: device.params.markerColor })}
       position={location}
     >
       <GoogleMarkerLabel

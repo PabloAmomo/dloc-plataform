@@ -1,6 +1,8 @@
 import { MutableRefObject } from "react";
 import { LatLng } from "./LatLng";
 import { MapActions } from "./MapActions";
+import { MapPath } from "./MapPath";
+import { Device } from "./Device";
 
 export interface MapProviderInterface {
   zoomChanged: undefined | boolean, 
@@ -15,5 +17,7 @@ export interface MapProviderInterface {
   setMinutes: CallableFunction,
   showDevices: string[],
   setShowDevices: CallableFunction,
+  addMapPaths: { (devices: Device[]) : void },
+  mapPaths: MapPath[],
   onActions: MutableRefObject<MapActions>,
 }

@@ -1,7 +1,10 @@
 import getMyPosition from 'functions/getMyPosition';
+import processMapPaths from 'functions/processMapPaths';
 import userSettingsGet from 'functions/userSettingsGet';
+import { Device } from 'models/Device';
 import { LatLng } from 'models/LatLng';
 import { MapActions } from 'models/MapActions';
+import { MapPath } from 'models/MapPath';
 import { MapProviderInterface } from 'models/MapProviderInterface';
 import { UserSettings } from 'models/UserSettings';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
@@ -29,6 +32,8 @@ const MapContext = createContext<MapProviderInterface>({
   setMinutes: () => {},
   showDevices: [],
   setShowDevices: () => {},
+  addMapPaths: () => {},
+  mapPaths: [],
   onActions: { current: emptyActions },
 });
 
@@ -41,8 +46,10 @@ export function MapActionsProvider({ children }: { children: any }) {
   const [minutes, setMinutes] = useState<number>(userSettings.geoMap.interval ?? 0);
   const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
   const [tick, setTick] = useState<number>(0);
-
+  const [mapPaths, setMapPaths] = useState<MapPath[]>([]);
   const onActions = useRef<MapActions>(emptyActions);
+
+  const addMapPaths = (devices: Device[]) => setMapPaths(processMapPaths(devices, mapPaths));
 
   const onGetPosition = (position: LatLng | undefined) => setMyPosition(position);
 
@@ -74,6 +81,8 @@ export function MapActionsProvider({ children }: { children: any }) {
         setMinutes,
         showDevices,
         setShowDevices,
+        addMapPaths,
+        mapPaths,
         onActions,
       }}
     >
