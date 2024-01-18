@@ -4,6 +4,7 @@ import { MapPath } from 'models/MapPath';
 import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
 
 const lineOptions = { strokeWeight: 3, strokeOpacity: 0.25 };
+const simulation = true;
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   const newMapPaths = [...(mapPaths ?? [])];
@@ -28,12 +29,13 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
     }
 
     /** Same position, exit */
-    if (newMapPaths[index].lastPosistion.lat === device.lat && newMapPaths[index].lastPosistion.lng === device.lng) continue;
+    if (!simulation && newMapPaths[index].lastPosistion.lat === device.lat && newMapPaths[index].lastPosistion.lng === device.lng) continue;
 
     /** Calculate start and end */
     const start: LatLng = newMapPaths[index].lastPosistion;
-    const end: LatLng = { lat: device.lat, lng: device.lng };
-    // const end: LatLng = { lat: newMapPaths[index].lastPosistion.lat + 0.001, lng: newMapPaths[index].lastPosistion.lng + 0.001 };
+    const end: LatLng = !simulation
+      ? { lat: device.lat, lng: device.lng }
+      : { lat: newMapPaths[index].lastPosistion.lat + 0.001, lng: newMapPaths[index].lastPosistion.lng + 0.001 };
 
     // Calculate distance n meter bettween start and end lat and lng position
     const distance = getDistanceFromLatLonInMeters(start.lat, start.lng, end.lat, end.lng);

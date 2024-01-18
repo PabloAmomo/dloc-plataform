@@ -25,14 +25,27 @@ const GoogleMap = () => {
   const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, myPosition, onActions, showDevices, mapPaths, addMapPaths } = useMapContext();
   const { devices } = useDevicesContext();
   const { user } = useUserContext();
-  const [userDevices, setUserDevices] = useState<Device[]>(devices);
+  const [ userDevices, setUserDevices ] = useState<Device[]>(devices);
 
-  /** Google Map */
+  /** For Google Map */
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: config.googleMapsApiKey });
   const currentInfoWindows = useRef<google.maps.InfoWindow>();
   const [map, setMap] = useState<any>();
   const [myPos, setMyPos] = useState<google.maps.LatLng | google.maps.LatLngLiteral | undefined>();
   const [pathsToDraw, setPathsToDraw] = useState<ReactNode[]>([]);
+
+  /** Set actions for parent and other controls */
+  onActions.current = {
+    mapReady: () => map && isLoaded,
+    clickOnDevice: (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t, findMapPath(device.imei)),
+    clickOnMap: () => currentInfoWindows.current && currentInfoWindows.current.close(),
+
+    centerBounds: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, devices, showDevices, myPosition }),
+    centerMyLocation: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, myPosition }),
+
+    getZoom: () => map?.getZoom() ?? 0,
+    setZoom: (zoom: number) => map?.setZoom(zoom > config.map.maxZoom ? config.map.maxZoom : zoom),
+  };
 
   /** Center and bound */
   const googleFitAndZoom = (zoomChangeState: boolean, mapMovedState: boolean, options: any) => {
@@ -45,21 +58,6 @@ const GoogleMap = () => {
 
   /** Find MapPath by IMEI */
   const findMapPath = (imei: string): MapPath | undefined => mapPaths?.find((mapPath: MapPath) => mapPath.imei === imei);
-
-  /** Set actions for parent */
-  onActions.current = {
-    clickOnDevice: (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t, findMapPath(device.imei)),
-    centerBounds: (zoomChangeState: boolean, mapMovedState: boolean) =>
-      googleFitAndZoom(zoomChangeState, mapMovedState, { map, devices, showDevices, myPosition }),
-    centerMyLocation: (zoomChangeState: boolean, mapMovedState: boolean) => googleFitAndZoom(zoomChangeState, mapMovedState, { map, myPosition }),
-    mapReady: () => map && isLoaded,
-    clickOnMap: () => currentInfoWindows.current && currentInfoWindows.current.close(),
-    getZoom: () => map?.getZoom() ?? 0,
-    setZoom: (zoom: number) => {
-      if (zoom > config.map.maxZoom) zoom = config.map.maxZoom;
-      map?.setZoom(zoom);
-    },
-  };
 
   /** My Position Change */
   useEffect(() => {
@@ -117,22 +115,16 @@ const GoogleMap = () => {
     mapPaths?.forEach((mapPath: MapPath) => {
       mapPath.path?.forEach((path: [LatLng, LatLng]) => {
         const route = path.map((path: LatLng) => new google.maps.LatLng(path.lat, path.lng));
-        const key = `${mapPath.imei}-${route[0].lat()}-${route[0].lng()}-${route[route.length - 1].lat()}-${route[route.length - 1].lng()}`;
+        const key = `${mapPath.imei}-${mapPath.lastPosistion}}`;
         keys.push(key);
-        console.log(mapPath.color);
         paths.push(
-          <Polyline
-            key={key}
-            path={route}
-            options={{ strokeColor: mapPath.color, strokeOpacity: mapPath.strokeOpacity, strokeWeight: mapPath.strokeWeight }}
-          />
+          <Polyline key={key} path={route} options={{ strokeColor: mapPath.color, strokeOpacity: mapPath.strokeOpacity, strokeWeight: mapPath.strokeWeight }} />
         );
       });
     });
-    
+
     setPathsToDraw(paths);
   }, [mapPaths]);
-
 
   /** Draw the Map or Loading */
   return !isLoaded ? (
