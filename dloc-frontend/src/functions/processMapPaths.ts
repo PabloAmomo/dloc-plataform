@@ -4,7 +4,7 @@ import { MapPath } from 'models/MapPath';
 import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
 
 const lineOptions = { strokeWeight: 3, strokeOpacity: 0.25 };
-const simulation = true;
+const simulation = false;
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   const newMapPaths = [...(mapPaths ?? [])];
