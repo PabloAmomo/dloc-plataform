@@ -14,8 +14,6 @@ import showDeviceGoogleInfoWindow from 'functions/showDeviceGoogleInfoWindow';
 import { LatLng } from 'models/LatLng';
 import { MapPath } from 'models/MapPath';
 
-const mapContainerStyle = { width: '100%', height: '100%' };
-const mapCenter = config.map.initCenter;
 const mapOptions = { zoomControl: true, streetViewControl: false, mapTypeControl: false, fullscreenControl: false, maxZoom: config.map.maxZoom };
 const mapPOIConfig = { featureType: 'poi', stylers: [{ visibility: 'off' }] };
 const mapTransitConfig = { featureType: 'transit', stylers: [{ visibility: 'off' }], elementType: 'labels.icon' };
@@ -162,8 +160,8 @@ const GoogleMap = () => {
   ) : (
     <>
       <GMap
-        mapContainerStyle={mapContainerStyle}
-        center={mapCenter}
+        mapContainerStyle={{ width: '100%', height: '100%' }}
+        center={ config.map.initCenter}
         onLoad={onLoad}
         onUnmount={onUnmount}
         onDragEnd={handleOnDragEnd}
