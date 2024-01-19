@@ -26,7 +26,7 @@ function GeoMap() {
 
     /** Update devices */
     getPositions(
-      { interval: minutes, imei: '*' },
+      { interval: minutes },
       (response: GetPositionsResult) => {
         try {
           // TODO: Add error handler if response has error...

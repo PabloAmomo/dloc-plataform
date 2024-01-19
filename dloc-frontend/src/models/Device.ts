@@ -1,14 +1,6 @@
+import { DeviceLocation } from "./DeviceLocation";
 import { DeviceParams } from "./DeviceParams";
 
-export type Device = {
-  imei: string,
-  batteryLevel: number,
-  directionAngle: number,
-  gsmSignal: number,
-  lastPositionUTC: string,
-  lastVisibilityUTC: string,
-  lat: number,
-  lng: number,
-  speed: number,
+export type Device = DeviceLocation & {
   params: DeviceParams,
 };

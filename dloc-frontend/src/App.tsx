@@ -52,7 +52,6 @@ function App() {
 
   /** Get devices and user data from API (First Load) */
   useEffect(() => {
-    console.log('RoutesApp: useEffect: getDevices');
     getDevices({}, (response: GetDevicesResult) => {
       try {
 
@@ -62,8 +61,6 @@ function App() {
         // Convert string params to paramr object and save it in context...
         let devices: Device[] = response.devices.map((item: Device) => ({ ...item, params: JSON.parse(item.params as any) }));
  
-        console.log('RoutesApp: useEffect: getDevices: response', devices);
-
         setDevices(devices);
 
       } catch (error: any) {

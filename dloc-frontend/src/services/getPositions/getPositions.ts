@@ -3,7 +3,7 @@ import { MutableRefObject } from 'react';
 import axiosCommon from 'utils/axiosCommon';
 
 const path = 'devices';
-type typeParams = { interval: number; imei: string };
+type typeParams = { interval: number; };
 
 function getPositions(parameters: typeParams, callback: (response: GetPositionsResult) => any, abortAxios: MutableRefObject<AbortController | undefined>) {
   axiosCommon({

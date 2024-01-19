@@ -11,8 +11,8 @@ import googleMapFitDevices from 'functions/googleMapFitDevices';
 import GoogleMarkerWithBattery from 'components/Google/GoogleMarkerWithBattery/GoogleMarkerWithBattery';
 import markerIcon from 'functions/markerIcon';
 import showDeviceGoogleInfoWindow from 'functions/showDeviceGoogleInfoWindow';
-import { LatLng } from 'models/LatLng';
 import { MapPath } from 'models/MapPath';
+import { Path } from 'models/Path';
 
 const mapOptions = { zoomControl: true, streetViewControl: false, mapTypeControl: false, fullscreenControl: false, maxZoom: config.map.maxZoom };
 const mapPOIConfig = { featureType: 'poi', stylers: [{ visibility: 'off' }] };
@@ -119,11 +119,12 @@ const GoogleMap = () => {
     const keys: string[] = [];
 
     mapPaths?.forEach((mapPath: MapPath, index: number) => {
-      mapPath.path?.forEach((path: [LatLng, LatLng]) => {
-        const route = path.map((item: LatLng) => new google.maps.LatLng(item.lat, item.lng));
+      mapPath.path?.forEach((path: Path) => {
+        const route = [new google.maps.LatLng(path.start.lat, path.start.lng), new google.maps.LatLng(path.end.lat, path.end.lng)];
         const lastRoute = route[route.length - 1];
         const key: string = `${mapPath.imei}-${route[0].lat()}-${route[0].lng()}-${lastRoute.lat()}-${lastRoute.lng()}`;
 
+        /** Save the key for remove old paths */
         keys.push(key);
 
         if (!newPathToDraw[key]) {

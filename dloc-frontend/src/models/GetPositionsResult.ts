@@ -1,3 +1,3 @@
-import { Location } from "./Location";
+import { DeviceLocation } from "./DeviceLocation";
 
-export type GetPositionsResult = { locations: Location[]; error: Error | null };
+export type GetPositionsResult = { locations: DeviceLocation[]; error: Error | null };
