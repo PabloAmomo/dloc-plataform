@@ -1,3 +1,5 @@
+import { Position } from "./Position";
+
 export interface Device {
   imei: string;
   lat: number;
@@ -9,4 +11,5 @@ export interface Device {
   lastPositionUTC: string;
   lastVisibilityUTC: string; 
   params: string;
+  positions?: Position[];
 }
