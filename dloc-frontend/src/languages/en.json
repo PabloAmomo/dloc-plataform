@@ -25,5 +25,6 @@
   "lastVisibility": "Visibility",
   "battery": "Battery",
   "distance": "Distance",
+  "lastUpdate": "Updated",
   "dateString": "{month}/{day}/{fullYear} {hour}:{minute}:{second}"
 }

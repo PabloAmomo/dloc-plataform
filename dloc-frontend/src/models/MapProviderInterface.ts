@@ -22,4 +22,6 @@ export interface MapProviderInterface {
   addMapPaths: { (devices: Device[]) : void },
   mapPaths: MapPath[],
   onActions: MutableRefObject<MapActions>,
+  lastUpdate: undefined | Date,
+  setLastUpdate: CallableFunction,
 }

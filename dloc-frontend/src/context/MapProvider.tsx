@@ -38,6 +38,8 @@ const MapContext = createContext<MapProviderInterface>({
   addMapPaths: () => {},
   mapPaths: [],
   onActions: { current: emptyActions },
+  lastUpdate: undefined,
+  setLastUpdate: () => {},
 });
 
 export function MapActionsProvider({ children }: { children: any }) {
@@ -51,6 +53,7 @@ export function MapActionsProvider({ children }: { children: any }) {
   const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
   const [tick, setTick] = useState<number>(0);
   const [mapPaths, setMapPaths] = useState<MapPath[]>([]);
+  const [lastUpdate, setLastUpdate] = useState<Date | undefined>();
   const onActions = useRef<MapActions>(emptyActions);
 
   const addMapPaths = (devices: Device[]) => setMapPaths(processMapPaths(devices, mapPaths));
@@ -90,6 +93,8 @@ export function MapActionsProvider({ children }: { children: any }) {
         addMapPaths,
         mapPaths,
         onActions,
+        lastUpdate, 
+        setLastUpdate
       }}
     >
       {children}

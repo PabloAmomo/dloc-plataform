@@ -1,11 +1,13 @@
-import { Box, Grid, SxProps } from '@mui/material';
-import DevicesSelector from 'components/DevicesSelector/DevicesSelector';
-import IntervalSelector from 'components/IntervalSelector/IntervalSelector';
+import { Box, Grid, SxProps, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import { useMapContext } from 'context/MapProvider';
+import { UserSettings } from 'models/UserSettings';
+import { useTranslation } from 'react-i18next';
+import DevicesSelector from 'components/DevicesSelector/DevicesSelector';
+import formatDate from 'functions/formatDate';
+import IntervalSelector from 'components/IntervalSelector/IntervalSelector';
 import userSettingsGet from 'functions/userSettingsGet';
 import userSettingsSet from 'functions/userSettingsSet';
-import { UserSettings } from 'models/UserSettings';
-import { useEffect } from 'react';
 
 const middleSxProps: SxProps = { flexGrow: '1!important', display: 'flex', pl: '0!important', pr: '0!important' };
 const containerSxProps: SxProps = {
@@ -23,14 +25,10 @@ const containerSxProps: SxProps = {
   right: 0,
 };
 
-function GeoMapBottomMenu({
-  hideIntervalSelector = false,
-  hideDevicesSelector = false,
-}: {
-  hideIntervalSelector?: boolean;
-  hideDevicesSelector?: boolean;
-}) {
-  const { isLoading, minutes, setMinutes, showDevices, setShowDevices } = useMapContext();
+function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = false }: { hideIntervalSelector?: boolean; hideDevicesSelector?: boolean }) {
+  const { isLoading, minutes, setMinutes, showDevices, setShowDevices, lastUpdate } = useMapContext();
+  const { t } = useTranslation();
+  const dateText: string = lastUpdate ? formatDate(lastUpdate, t('dateString')) ?? '-' : '-';
 
   useEffect(() => {
     const userSettings: UserSettings = userSettingsGet();
@@ -42,6 +40,13 @@ function GeoMapBottomMenu({
   return (
     <Box className="boxShadow6-inverted" sx={containerSxProps}>
       <Grid container spacing={2} sx={{ flexWrap: 'nowrap' }}>
+        {/* Last update */}
+        <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
+          <Typography variant="caption" color="textSecondary" sx={{ fontSize: '0.75rem' }}>
+            {`${t('lastUpdate')} `}<b>{dateText}</b>
+          </Typography>
+        </Grid>
+
         {/* Interval Selector */}
         {!hideIntervalSelector && (
           <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
