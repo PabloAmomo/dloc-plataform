@@ -48,6 +48,9 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
         const start: LatLng = beforeIdx >= 0 ? { lat: mapPath.path[beforeIdx].end.lat, lng: mapPath.path[beforeIdx].end.lng } : mapPath.lastPosistion;
         const end: LatLng = { lat: location.lat, lng: location.lng };
 
+        /** Update the start lat and lng in the next path */
+        if (existIndex !== -1) mapPath.path[existIndex].start = end;
+
         /** Add new path in the correct index */
         if (insertInto === -1) mapPath.path.push({ start, end, dateTimeUTC: location.dateTimeUTC });
         else mapPath.path.splice(insertInto, 0, { start, end, dateTimeUTC: location.dateTimeUTC });
