@@ -1,6 +1,6 @@
 import { Box, Grid, SxProps, Typography } from '@mui/material';
 import { useDevicesContext } from 'context/DevicesProvider';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useMapContext } from 'context/MapProvider';
 import { UserSettings } from 'models/UserSettings';
 import { useTranslation } from 'react-i18next';
@@ -70,4 +70,4 @@ function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------
 }
 
-export default GeoMapBottomMenu;
+export default memo(GeoMapBottomMenu);

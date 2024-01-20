@@ -13,6 +13,7 @@ import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import lngEN from 'languages/en.json';
 import lngES from 'languages/es.json';
 import RoutesApp from 'routesApp/RoutesApp';
+import logError from 'functions/logError';
 
 i18n
   .use(I18nextBrowserLanguageDetector)
@@ -52,20 +53,21 @@ function App() {
 
   /** Get devices and user data from API (First Load) */
   useEffect(() => {
-    getDevices({}, (response: GetDevicesResult) => {
-      try {
+    getDevices(
+      {},
+      (response: GetDevicesResult) => {
+        try {
+          // TODO: Add error handler if response has error...
+          if (response?.error || response.devices?.length === 0) throw new Error(response?.error?.message ?? t('errors.noDevicesReceived'));
 
-        // TODO: Add error handler if response has error...
-        if (response?.error || response.devices?.length === 0) throw new Error(response?.error?.message ?? t('errors.noDevicesReceived'));
-
-        // Set devices
-        setDevices(response.devices as Device[]);
-
-      } catch (error: any) {
-        addSnackbar('error', error.message);
-      }
-    },
-    abortAxios);
+          setDevices(response.devices);
+        } catch (error: any) {
+          addSnackbar('error', error.message);
+          logError(error.message, error);
+        }
+      },
+      abortAxios
+    );
 
     getUser({}, (response: GetUserResult) => {
       try {
