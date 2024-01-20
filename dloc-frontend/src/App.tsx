@@ -59,8 +59,9 @@ function App() {
         try {
           // TODO: Add error handler if response has error...
           if (response?.error || response.devices?.length === 0) throw new Error(response?.error?.message ?? t('errors.noDevicesReceived'));
-
+          
           setDevices(response.devices);
+
         } catch (error: any) {
           addSnackbar('error', error.message);
           logError(error.message, error);
