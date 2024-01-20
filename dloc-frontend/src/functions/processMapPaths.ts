@@ -15,30 +15,29 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   for (let i = 0; i < devices.length; i++) {
     const device: Device = devices[i];
     const locations: Location[] = device.locations;
+    const {
+      imei,
+      lastPositionUTC,
+      lat,
+      lng,
+      params: { pathColor: color },
+    } = device;
 
     /** Find device index */
-    let index = newMapPaths.findIndex((mapPath: MapPath) => mapPath.imei === device.imei);
+    let index = newMapPaths.findIndex((mapPath: MapPath) => mapPath.imei === imei);
 
     /** Not found - Add the new device */
     if (index === -1) {
-      newMapPaths.push({
-        imei: device.imei,
-        lastPositionUTC: device.lastPositionUTC,
-        path: [],
-        lastPosistion: { lat: device.lat, lng: device.lng },
-        color: device.params.pathColor,
-        strokeWeight: 3,
-        strokeOpacity: 0.25,
-        distance: 0,
-      });
+      const lastPosistion: LatLng = { lat, lng };
+      newMapPaths.push({ imei, lastPositionUTC, path: [], lastPosistion, color, strokeWeight: 3, strokeOpacity: 0.25, distance: 0 });
       index = newMapPaths.length - 1;
     }
 
     /** Process locations for each device */
     const mapPath = newMapPaths[index];
     locations.forEach((location: Location) => {
-      const dateTimeUTCms : number = convertUTCDateToLocalDate(location.dateTimeUTC).getTime();
-      const existIndex : number = mapPath.path.findIndex((path) => path.dateTimeUTC === location.dateTimeUTC);
+      const dateTimeUTCms: number = convertUTCDateToLocalDate(location.dateTimeUTC).getTime();
+      const existIndex: number = mapPath.path.findIndex((path) => path.dateTimeUTC === location.dateTimeUTC);
 
       if (existIndex === -1) {
         /** Find index where to insert new path */
