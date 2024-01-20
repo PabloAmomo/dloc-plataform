@@ -58,10 +58,8 @@ function App() {
         // TODO: Add error handler if response has error...
         if (response?.error || response.devices?.length === 0) throw new Error(response?.error?.message ?? t('errors.noDevicesReceived'));
 
-        // Convert string params to paramr object and save it in context...
-        let devices: Device[] = response.devices.map((item: Device) => ({ ...item, params: JSON.parse(item.params as any) }));
- 
-        setDevices(devices);
+        // Set devices
+        setDevices(response.devices as Device[]);
 
       } catch (error: any) {
         addSnackbar('error', error.message);

@@ -5,8 +5,7 @@ import { MapPath } from 'models/MapPath';
 import { Path } from 'models/Path';
 import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
 import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
-
-const maxPathLength = 250;
+import { config } from 'config/config';
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   const newMapPaths = [...(mapPaths ?? [])];
@@ -14,7 +13,7 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   /** Process devices */
   for (let i = 0; i < devices.length; i++) {
     const device: Device = devices[i];
-    const locations: Location[] = device.locations;
+    const locations: Location[] = device.locations.reverse();
     const {
       imei,
       lastPositionUTC,
@@ -35,40 +34,52 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
 
     /** Process locations for each device */
     const mapPath = newMapPaths[index];
-    locations.forEach((location: Location) => {
+    for (let i = 0; i < locations.length; i++) {
+      const location: Location = locations[i];
       const dateTimeUTCms: number = convertUTCDateToLocalDate(location.dateTimeUTC).getTime();
       const existIndex: number = mapPath.path.findIndex((path) => path.dateTimeUTC === location.dateTimeUTC);
+      const lastPosition: LatLng = {
+        lat: mapPath?.path?.[mapPath.path.length - 1]?.end?.lat ?? mapPath.lastPosistion.lat,
+        lng: mapPath?.path?.[mapPath.path.length - 1]?.end?.lng ?? mapPath.lastPosistion.lng,
+      };
 
-      if (existIndex === -1) {
-        /** Find index where to insert new path */
-        let insertInto = mapPath.path.findIndex((path) => dateTimeUTCms > convertUTCDateToLocalDate(path.dateTimeUTC).getTime());
+      /** Location already exist, go for next */
+      if (existIndex !== -1) continue;
 
-        /** Start and end lat and lng position */
-        const beforeIdx = insertInto - 1;
-        const start: LatLng = beforeIdx >= 0 ? { lat: mapPath.path[beforeIdx].end.lat, lng: mapPath.path[beforeIdx].end.lng } : mapPath.lastPosistion;
-        const end: LatLng = { lat: location.lat, lng: location.lng };
+      /** Find index where to insert new path */
+      let insertInto = mapPath.path.findIndex((path) => dateTimeUTCms < convertUTCDateToLocalDate(path.dateTimeUTC).getTime());
 
-        /** Update the start lat and lng in the next path */
-        if (existIndex !== -1) mapPath.path[existIndex].start = end;
+      /** Start and end lat and lng position */
+      const start: LatLng = insertInto > 0 ? { lat: mapPath.path[insertInto - 1].end.lat, lng: mapPath.path[insertInto - 1].end.lng } : lastPosition;
+      const end: LatLng = { lat: location.lat, lng: location.lng };
 
-        /** Add new path in the correct index */
-        if (insertInto === -1) mapPath.path.push({ start, end, dateTimeUTC: location.dateTimeUTC });
-        else mapPath.path.splice(insertInto, 0, { start, end, dateTimeUTC: location.dateTimeUTC });
+      /** Update the start lat and lng in the next path */
+      if (insertInto > 0) mapPath.path[insertInto - 1].end = { ...start };
 
-        /**  Update last position if date is greater than last position date */
-        if (dateTimeUTCms > convertUTCDateToLocalDate(mapPath.lastPositionUTC).getTime()) {
-          mapPath.lastPosistion = end;
-          mapPath.lastPositionUTC = location.dateTimeUTC;
-        }
+      /** Update the start lat and lng in the next path */
+      if (insertInto !== -1) mapPath.path[insertInto].start = { ...end };
 
-        /** Calculate distance in meter bettween start and end lat and lng position */
-        const distance = getDistanceFromLatLonInMeters(start.lat, start.lng, end.lat, end.lng);
-        mapPath.distance += distance;
-      }
-    });
+      /** Add new path in the correct index */
+      if (insertInto === -1) mapPath.path.push({ start, end, dateTimeUTC: location.dateTimeUTC });
+      else mapPath.path.splice(insertInto, 0, { start, end, dateTimeUTC: location.dateTimeUTC });
+
+      /** Calculate distance in meter bettween start and end lat and lng position */
+      const distance = getDistanceFromLatLonInMeters(start.lat, start.lng, end.lat, end.lng);
+      mapPath.distance += distance;
+    }
+
+    if (mapPath.path.length > 0) {
+      /** Update first path */
+      mapPath.path[0].start = { ...mapPath.path[0].end };
+      /** Update last path */
+      const lastPath: Path = mapPath.path[mapPath.path.length - 1];
+      lastPath.end = { ...lastPath.start };
+      mapPath.lastPosistion = { ...lastPath.end };
+      mapPath.lastPositionUTC = lastPath.dateTimeUTC;
+    }
 
     /** Max path length, remove execces paths */
-    while (mapPath.path.length > maxPathLength) {
+    while (mapPath.path.length > config.map.maxPathsByDevice) {
       const removed: Path | undefined = mapPath.path.shift();
       if (removed) mapPath.distance -= getDistanceFromLatLonInMeters(removed.start.lat, removed.start.lng, removed.end.lat, removed.end.lng);
     }

@@ -4,6 +4,7 @@ export type typeConfig = {
   defaultInterval: number,
   debug: boolean,
   map: {
+    maxPathsByDevice: number,
     initCenter: { lat: number, lng: number },
     initZoom: number,
     maxZoom: number,
@@ -22,6 +23,7 @@ export const config :typeConfig = {
   debug: true,
   
   map: {
+    maxPathsByDevice: 1000,
     initCenter: { lat: 40.417099903, lng: -3.70357844 },
     initZoom: 6,
     maxZoom: 19,

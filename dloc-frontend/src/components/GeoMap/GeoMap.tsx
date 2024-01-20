@@ -31,7 +31,7 @@ function GeoMap() {
         try {
           // TODO: Add error handler if response has error...
           if (response?.error) throw new Error(response.error?.message ?? response.error);
-
+        
           setDevices(processDevices(response, devices));
 
           setLastUpdate(new Date());
