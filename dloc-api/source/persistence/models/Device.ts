@@ -11,5 +11,5 @@ export interface Device {
   lastPositionUTC: string;
   lastVisibilityUTC: string; 
   params: string;
-  positions?: Position[];
+  locations?: Position[];
 }

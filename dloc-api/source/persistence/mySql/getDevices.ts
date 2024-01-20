@@ -19,19 +19,19 @@ const getDevices = async (): Promise<GetDevicesResult> => {
     return { results: response?.results ?? [], error: null };
   });
 
-  /** Get positions for each device */
+  /** Get locations for each device */
   for (let index = 0; index < response.results.length; index++) {
     const element = response.results[index];
 
-    const paramsPositions: any[] = [element.imei];
-    const sqlPositions = `SELECT dateTimeUTC, lat, lng, speed, directionAngle, gsmSignal, batteryLevel 
+    const paramsLocations: any[] = [element.imei];
+    const sqlLocations = `SELECT dateTimeUTC, lat, lng, speed, directionAngle, gsmSignal, batteryLevel 
                           FROM \`position\` WHERE imei = ? ORDER BY dateTimeUTC DESC LIMIT 50;`;
 
-    await mySqlQueryAsync(connectionConfig, sqlPositions, paramsPositions).then((response) => {
+    await mySqlQueryAsync(connectionConfig, sqlLocations, paramsLocations).then((response) => {
       /** Check for errors */
       if (response.error) return { error: response.error, results: [] };
       /** Return results */
-      element.positions = response?.results ?? [];
+      element.locations = response?.results ?? [];
     });
   }
 
