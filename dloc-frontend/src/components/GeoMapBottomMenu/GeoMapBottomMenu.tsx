@@ -1,4 +1,5 @@
 import { Box, Grid, SxProps, Typography } from '@mui/material';
+import { useDevicesContext } from 'context/DevicesProvider';
 import { useEffect } from 'react';
 import { useMapContext } from 'context/MapProvider';
 import { UserSettings } from 'models/UserSettings';
@@ -26,7 +27,8 @@ const containerSxProps: SxProps = {
 };
 
 function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = false }: { hideIntervalSelector?: boolean; hideDevicesSelector?: boolean }) {
-  const { isLoading, minutes, setMinutes, showDevices, setShowDevices, lastUpdate } = useMapContext();
+  const { isLoading, minutes, setMinutes, showDevices, setShowDevices } = useMapContext();
+  const { lastUpdate } = useDevicesContext();
   const { t } = useTranslation();
   const dateText: string = lastUpdate ? formatDate(lastUpdate, t('dateString')) ?? '-' : '-';
 

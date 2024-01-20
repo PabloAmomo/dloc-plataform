@@ -17,7 +17,7 @@ function GeoMap() {
   const [tick, setTick] = useState<number>(0);
   const { addSnackbar } = useSnackContext();
   const { devices, setDevices } = useDevicesContext();
-  const { isLoading, setIsLoading, minutes, setLastUpdate } = useMapContext();
+  const { isLoading, setIsLoading, minutes } = useMapContext();
   const abortAxios = useRef<AbortController>();
 
   /** Update all device positions */
@@ -33,8 +33,6 @@ function GeoMap() {
           if (response?.error) throw new Error(response.error?.message ?? response.error);
         
           setDevices(processDevices(response, devices));
-
-          setLastUpdate(new Date());
           
         } catch (error: any) {
           addSnackbar && addSnackbar('error', error.message ?? error);
