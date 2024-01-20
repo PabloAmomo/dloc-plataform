@@ -1,11 +1,11 @@
 import { Device } from 'models/Device';
 import { LatLng } from 'models/LatLng';
-import { MapPath } from 'models/MapPath';
-import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
 import { Location } from 'models/Location';
+import { MapPath } from 'models/MapPath';
+import { Path } from 'models/Path';
 import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
+import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
 
-const lineOptions = { strokeWeight: 3, strokeOpacity: 0.25 };
 const maxPathLength = 250;
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
@@ -16,10 +16,10 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
     const device: Device = devices[i];
     const locations: Location[] = device.locations;
 
-    /** Find device */
+    /** Find device index */
     let index = newMapPaths.findIndex((mapPath: MapPath) => mapPath.imei === device.imei);
 
-    /** Not found - Add new device */
+    /** Not found - Add the new device */
     if (index === -1) {
       newMapPaths.push({
         imei: device.imei,
@@ -27,49 +27,48 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
         path: [],
         lastPosistion: { lat: device.lat, lng: device.lng },
         color: device.params.pathColor,
-        ...lineOptions,
+        strokeWeight: 3,
+        strokeOpacity: 0.25,
         distance: 0,
       });
       index = newMapPaths.length - 1;
     }
 
-    /** Process locations */
-    let lastLocation: Location | null = null;
+    /** Process locations for each device */
+    const mapPath = newMapPaths[index];
     locations.forEach((location: Location) => {
-      const existIndex = newMapPaths[index].path.findIndex((path) => path.dateTimeUTC === location.dateTimeUTC);
+      const dateTimeUTCms : number = convertUTCDateToLocalDate(location.dateTimeUTC).getTime();
+      const existIndex : number = mapPath.path.findIndex((path) => path.dateTimeUTC === location.dateTimeUTC);
 
       if (existIndex === -1) {
-        const date: Date = convertUTCDateToLocalDate(location.dateTimeUTC);
-        const start: LatLng = lastLocation ? { lat: lastLocation.lat, lng: lastLocation.lng } : { lat: location.lat, lng: location.lng };
+        /** Find index where to insert new path */
+        let insertInto = mapPath.path.findIndex((path) => dateTimeUTCms > convertUTCDateToLocalDate(path.dateTimeUTC).getTime());
+
+        /** Start and end lat and lng position */
+        const beforeIdx = insertInto - 1;
+        const start: LatLng = beforeIdx >= 0 ? { lat: mapPath.path[beforeIdx].end.lat, lng: mapPath.path[beforeIdx].end.lng } : mapPath.lastPosistion;
         const end: LatLng = { lat: location.lat, lng: location.lng };
 
-        /** Add new path */
-        newMapPaths[index].path.push({ start, end, dateTimeUTC: location.dateTimeUTC });
+        /** Add new path in the correct index */
+        if (insertInto === -1) mapPath.path.push({ start, end, dateTimeUTC: location.dateTimeUTC });
+        else mapPath.path.splice(insertInto, 0, { start, end, dateTimeUTC: location.dateTimeUTC });
 
         /**  Update last position if date is greater than last position date */
-        if (!lastLocation || date.getTime() > convertUTCDateToLocalDate(lastLocation.dateTimeUTC).getTime()) {
-          newMapPaths[index].lastPosistion = end;
-          newMapPaths[index].lastPositionUTC = location.dateTimeUTC;
+        if (dateTimeUTCms > convertUTCDateToLocalDate(mapPath.lastPositionUTC).getTime()) {
+          mapPath.lastPosistion = end;
+          mapPath.lastPositionUTC = location.dateTimeUTC;
         }
 
-        /** Calculate distance n meter bettween start and end lat and lng position */
+        /** Calculate distance in meter bettween start and end lat and lng position */
         const distance = getDistanceFromLatLonInMeters(start.lat, start.lng, end.lat, end.lng);
-        newMapPaths[index].distance += distance;
-
-        /** Save last */
-        lastLocation = location;
+        mapPath.distance += distance;
       }
     });
 
-    /** Max path length, remove paths */
-    while (newMapPaths[index].path.length > maxPathLength) {
-      newMapPaths[index].distance -= getDistanceFromLatLonInMeters(
-        newMapPaths[index].path[0].start.lat,
-        newMapPaths[index].path[0].start.lng,
-        newMapPaths[index].path[0].end.lat,
-        newMapPaths[index].path[0].end.lng
-      );
-      newMapPaths[index].path.shift();
+    /** Max path length, remove execces paths */
+    while (mapPath.path.length > maxPathLength) {
+      const removed: Path | undefined = mapPath.path.shift();
+      if (removed) mapPath.distance -= getDistanceFromLatLonInMeters(removed.start.lat, removed.start.lng, removed.end.lat, removed.end.lng);
     }
   }
 
