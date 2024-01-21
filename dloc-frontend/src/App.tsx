@@ -1,4 +1,3 @@
-import { Device } from 'models/Device';
 import { GetDevicesResult } from 'models/GetDevicesResult';
 import { GetUserResult } from 'models/GetUserResult';
 import { initReactI18next, useTranslation } from 'react-i18next';
