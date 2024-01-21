@@ -1,47 +1,18 @@
 import { GetDevicesResult } from 'models/GetDevicesResult';
 import { GetUserResult } from 'models/GetUserResult';
-import { initReactI18next, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDevicesContext } from 'context/DevicesProvider';
 import { useEffect, useRef } from 'react';
 import { useSnackContext } from 'context/SnackProvider';
 import { useUserContext } from 'context/UserProvider';
 import getDevices from 'services/getDevices/getDevices';
 import getUser from 'services/getUser/getUser';
-import i18n from 'i18next';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import lngEN from 'languages/en.json';
-import lngES from 'languages/es.json';
 import RoutesApp from 'routesApp/RoutesApp';
 import logError from 'functions/logError';
+import configI18n from 'functions/configI18n';
 
-i18n
-  .use(I18nextBrowserLanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: { ...lngEN } },
-      es: { translation: { ...lngES } },
-    },
-    lng: 'es',
-    fallbackLng: ['es', 'en'],
-    interpolation: { escapeValue: false },
-
-    detection: {
-      order: ['querystring', 'cookie', 'localStorage', 'sessionStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
-      lookupQuerystring: 'lng',
-      lookupCookie: 'i18next',
-      lookupLocalStorage: 'i18nextLng',
-      lookupSessionStorage: 'i18nextLng',
-      lookupFromPathIndex: 0,
-      lookupFromSubdomainIndex: 0,
-      caches: ['localStorage', 'cookie'],
-      excludeCacheFor: ['cimode'],
-      cookieMinutes: 10,
-      cookieDomain: 'myDomain',
-      htmlTag: document.documentElement,
-      cookieOptions: { path: '/', sameSite: 'strict' },
-    },
-  });
+/** Set i18n config */
+configI18n('es', 'dloc-frontend');
 
 function App() {
   const { setUser } = useUserContext();

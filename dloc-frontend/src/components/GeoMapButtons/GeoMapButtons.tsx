@@ -4,12 +4,13 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import { useMapContext } from 'context/MapProvider';
 import RampLeftIcon from '@mui/icons-material/RampLeft';
 
-const buttonContainerProps: SxProps = { backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: '50%', ml: 1 };
+const buttosContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
+const buttonContainerProps: SxProps = { backgroundColor: 'rgba(0, 0, 0, 0.1)', borderRadius: '50%', ml: 1 };
 
 const GeoMapButtons = () => {
   const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved, showPath } = useMapContext();
   const boundColor: string = (mapMoved ?? false) || (zoomChanged ?? false) ? 'red' : 'inherit';
-  const showPathColor: string = (!showPath ?? false) ? 'red' : 'inherit';
+  const showPathColor: string = !showPath ?? false ? 'red' : 'inherit';
 
   /** Set automatic bounds  */
   const handleClickCenterBounds = () => {
@@ -26,7 +27,7 @@ const GeoMapButtons = () => {
   const handleShowPath = () => onActions.current.showPath(!showPath);
 
   return (
-    <Box sx={{ position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 }}>
+    <Box sx={buttosContainerProps}>
       <Box sx={buttonContainerProps}>
         <IconButton onClick={handleShowPath} size="large">
           <RampLeftIcon htmlColor={showPathColor} fontSize="inherit" />
