@@ -14,13 +14,8 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   for (let i = 0; i < devices.length; i++) {
     const device: Device = devices[i];
     const locations: Location[] = device.locations.reverse();
-    const {
-      imei,
-      lastPositionUTC,
-      lat,
-      lng,
-      params: { pathColor: color },
-    } = device;
+    const { imei, lastPositionUTC, lat, lng, params } = device;
+    const { pathColor: color } = params;
 
     /** Find device index and add a new device if not exist, and select it */
     let index = newMapPaths.findIndex((mapPath: MapPath) => mapPath.imei === imei);
@@ -56,8 +51,8 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
       else {
         const prevPath: Path = newPaths[index - 1];
         prevPath.end = { ...path.start };
-        mapPath.distance += getDistanceFromLatLonInMeters(prevPath.start.lat, prevPath.start.lng, prevPath.end.lat, prevPath.end.lng)
-      };
+        mapPath.distance += getDistanceFromLatLonInMeters(prevPath.start.lat, prevPath.start.lng, prevPath.end.lat, prevPath.end.lng);
+      }
     });
 
     /** Update paths */
