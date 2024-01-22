@@ -3,6 +3,7 @@ import { Device } from "./Device";
 export interface MapActions {
   centerMyLocation: (zoomChangeState: boolean, mapMovedState: boolean) => void;
   centerBounds: (zoomChangeState: boolean, mapMovedState: boolean) => void; 
+  centerOnDevice: (device: Device, reset: boolean) => void;
   clickOnDevice: (device: Device) => void;
   mapReady: () => boolean;
   clickOnMap: (event: any) => void;

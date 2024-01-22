@@ -1,14 +1,19 @@
-import { Box, IconButton, SxProps } from '@mui/material';
-import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
-import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
+import { Box, IconButton, SxProps, Typography } from '@mui/material';
+import { Device } from 'models/Device';
+import { useDevicesContext } from 'context/DevicesProvider';
 import { useMapContext } from 'context/MapProvider';
+import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import RampLeftIcon from '@mui/icons-material/RampLeft';
 
-const buttosContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
+const buttonsContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
 const buttonContainerProps: SxProps = { backgroundColor: 'rgba(0, 0, 0, 0.1)', borderRadius: '50%', ml: 1 };
+const buttonDeviceContainerProps: SxProps = { ...buttonContainerProps, borderRadius: '8px', display: 'flex', flexDirection: 'column', placeContent: 'center' };
 
 const GeoMapButtons = () => {
-  const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved, showPath } = useMapContext();
+  const { devices } = useDevicesContext();
+  const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved, showPath, showDevices, centerOn } = useMapContext();
   const boundColor: string = (mapMoved ?? false) || (zoomChanged ?? false) ? 'red' : 'inherit';
   const showPathColor: string = !showPath ?? false ? 'red' : 'inherit';
 
@@ -20,6 +25,9 @@ const GeoMapButtons = () => {
     } else onActions.current.centerBounds(false, false);
   };
 
+  /** Center on Device  */
+  const handleCenteronDevice = (device: Device) => onActions.current.centerOnDevice(device, true);
+
   /** Center on my location  */
   const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, false);
 
@@ -27,7 +35,16 @@ const GeoMapButtons = () => {
   const handleShowPath = () => onActions.current.showPath(!showPath);
 
   return (
-    <Box sx={buttosContainerProps}>
+    <Box sx={buttonsContainerProps}>
+      {devices && devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei)).map((device) => (
+        <Box sx={{...buttonDeviceContainerProps }}>
+          <IconButton onClick={() => handleCenteronDevice(device)} size="large">
+            <MyLocationIcon fontSize={"small"} htmlColor={centerOn ? 'green' : 'inherit'} />
+            <Typography variant="caption" color={'black'} ml={1} >{device.params.name}</Typography>
+          </IconButton>
+        </Box>
+      ))}
+
       <Box sx={buttonContainerProps}>
         <IconButton onClick={handleShowPath} size="large">
           <RampLeftIcon htmlColor={showPathColor} fontSize="inherit" />

@@ -7,10 +7,10 @@ import { useMapContext } from 'context/MapProvider';
 import { useTranslation } from 'react-i18next';
 import { useUserContext } from 'context/UserProvider';
 import CircularLoading from 'components/CircularLoading/CircularLoading';
-import googleMapFitDevices from 'functions/googleMapFitDevices';
+import googleMapFitDevices from 'functions/Google/googleMapFitDevices';
 import GoogleMarkerWithBattery from 'components/Google/GoogleMarkerWithBattery/GoogleMarkerWithBattery';
-import markerIcon from 'functions/markerIcon';
-import showDeviceGoogleInfoWindow from 'functions/showDeviceGoogleInfoWindow';
+import googleMarkerIcon from 'functions/Google/googleMarkerIcon';
+import googleShowDeviceInfoWindow from 'functions/Google/googleShowDeviceInfoWindow';
 import { MapPath } from 'models/MapPath';
 import { Path } from 'models/Path';
 
@@ -20,8 +20,21 @@ const mapTransitConfig = { featureType: 'transit', stylers: [{ visibility: 'off'
 
 const GoogleMap = () => {
   const { t } = useTranslation();
-  const { zoomChanged, mapMoved, setZoomChanged, setMapMoved, myPosition, onActions, showDevices, showPath, setShowPath, mapPaths, addMapPaths } =
-    useMapContext();
+  const {
+    zoomChanged,
+    mapMoved,
+    setZoomChanged,
+    setMapMoved,
+    myPosition,
+    onActions,
+    showDevices,
+    showPath,
+    setShowPath,
+    mapPaths,
+    addMapPaths,
+    setCenterOn,
+    centerOn,
+  } = useMapContext();
   const { devices } = useDevicesContext();
   const { user } = useUserContext();
   const [userDevices, setUserDevices] = useState<Device[]>(devices);
@@ -36,11 +49,19 @@ const GoogleMap = () => {
   /** Set actions for parent and other controls */
   onActions.current = {
     mapReady: () => map && isLoaded,
-    clickOnDevice: (device: Device) => showDeviceGoogleInfoWindow(device, currentInfoWindows, map, t, findMapPath(device.imei), showPath),
+    clickOnDevice: (device: Device) => googleShowDeviceInfoWindow(device, currentInfoWindows, map, t, findMapPath(device.imei), showPath),
     clickOnMap: () => currentInfoWindows.current && currentInfoWindows.current.close(),
 
     centerBounds: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, devices, showDevices, myPosition }),
     centerMyLocation: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, myPosition }),
+    centerOnDevice: (device: Device, reset: boolean) => {
+      if (reset && centerOn !== undefined) {
+        setCenterOn(undefined);
+        return;
+      }
+      setCenterOn(device);
+      googleFitAndZoom(true, true, { map, devices: [device] });
+    },
 
     showPath: (showPath: boolean) => setShowPath(showPath),
 
@@ -81,8 +102,9 @@ const GoogleMap = () => {
     /** Set the devices */
     setUserDevices(devices);
 
-    /** Center and bound if not zoom or map moved by user */
-    if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
+    /** Center indevice, or bound all if not zoom or map moved by user */
+    if (centerOn) onActions.current.centerOnDevice(centerOn, false);
+    else if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 
@@ -186,7 +208,7 @@ const GoogleMap = () => {
             ))}
 
         {/* My Position Marker */}
-        {myPos && user && <Marker zIndex={config.map.zIndex.me} icon={markerIcon(user.iconOnMap)} position={myPos} />}
+        {myPos && user && <Marker zIndex={config.map.zIndex.me} icon={googleMarkerIcon(user.iconOnMap)} position={myPos} />}
       </GMap>
     </>
   );

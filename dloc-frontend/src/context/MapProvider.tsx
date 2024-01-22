@@ -12,6 +12,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 const emptyActions = {
   centerBounds: () => {},
   centerMyLocation: () => {},
+  centerOnDevice: () => {},
   clickOnDevice: () => {},
   mapReady: () => false,
   clickOnMap: () => {},
@@ -37,6 +38,8 @@ const MapContext = createContext<MapProviderInterface>({
   setShowDevices: () => {},
   addMapPaths: () => {},
   mapPaths: [],
+  centerOn: undefined,
+  setCenterOn: () => {},
   onActions: { current: emptyActions },
 });
 
@@ -51,6 +54,8 @@ export function MapActionsProvider({ children }: { children: any }) {
   const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
   const [tick, setTick] = useState<number>(0);
   const [mapPaths, setMapPaths] = useState<MapPath[]>([]);
+  const [centerOn, setCenterOn] = useState<Device>();
+
   const onActions = useRef<MapActions>(emptyActions);
 
   const addMapPaths = (devices: Device[]) => setMapPaths(processMapPaths(devices, mapPaths));
@@ -89,6 +94,8 @@ export function MapActionsProvider({ children }: { children: any }) {
         setShowDevices,
         addMapPaths,
         mapPaths,
+        centerOn,
+        setCenterOn,
         onActions,
       }}
     >

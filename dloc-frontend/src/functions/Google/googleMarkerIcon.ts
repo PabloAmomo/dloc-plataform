@@ -1,6 +1,6 @@
 import { IconType } from "models/IconType";
 
-const markerIcon = (iconType: IconType, options: any = {}) : google.maps.Icon | undefined  => {
+const googleMarkerIcon = (iconType: IconType, options: any = {}) : google.maps.Icon | undefined  => {
   var varResponse: google.maps.Icon | undefined;
   try {
     /* ------------------------------------------------------------------------------ */
@@ -113,4 +113,4 @@ const markerIcon = (iconType: IconType, options: any = {}) : google.maps.Icon | 
   return varResponse;
 }
 
-export default markerIcon;
+export default googleMarkerIcon;

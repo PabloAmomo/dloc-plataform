@@ -2,7 +2,7 @@ import { Marker } from '@react-google-maps/api';
 import GoogleMarkerLabel from 'components/Google/GoogleMarkerLabel/GoogleMarkerLabel';
 import { Box } from '@mui/material';
 import { config } from 'config/config';
-import markerIcon from 'functions/markerIcon';
+import googleMarkerIcon from 'functions/Google/googleMarkerIcon';
 import calculateTime from 'functions/calculateTime';
 import { useTranslation } from 'react-i18next';
 import { Device } from 'models/Device';
@@ -33,7 +33,7 @@ const GoogleMarkerWithBattery = ({ device, onClick }: { device: Device; onClick:
       onClick={handleOnClick}
       zIndex={config.map.zIndex.endPoint}
       title={device.params.name}
-      icon={markerIcon(device.params.endTrack, { fillColor: device.params.markerColor })}
+      icon={googleMarkerIcon(device.params.endTrack, { fillColor: device.params.markerColor })}
       position={location}
     >
       <GoogleMarkerLabel

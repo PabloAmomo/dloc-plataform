@@ -9,6 +9,8 @@ export interface MapProviderInterface {
   setZoomChanged: CallableFunction, 
   mapMoved: undefined | boolean, 
   setMapMoved: CallableFunction,
+  centerOn: undefined | Device,
+  setCenterOn: CallableFunction,
   myPosition: undefined | LatLng,
   setMyPosition: CallableFunction,  
   isLoading: boolean,

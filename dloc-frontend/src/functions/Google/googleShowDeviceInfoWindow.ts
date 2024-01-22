@@ -1,11 +1,11 @@
 import { Device } from 'models/Device';
-import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
-import formatDate from './formatDate';
-import createGoogleInfoWindow from './createGoogleInfoWindow';
-import calculateTime from './calculateTime';
+import convertUTCDateToLocalDate from '../convertUTCDateToLocalDate';
+import formatDate from '../formatDate';
+import googleInfoWindow from './googleInfoWindow';
+import calculateTime from '../calculateTime';
 import { MapPath } from 'models/MapPath';
 
-const showDeviceGoogleInfoWindow = (device: Device, currentInfoWindows: React.MutableRefObject<google.maps.InfoWindow | undefined>, map: any, t: any, deviceMapPath : MapPath | undefined, showDistance : boolean) => {
+const googleShowDeviceInfoWindow = (device: Device, currentInfoWindows: React.MutableRefObject<google.maps.InfoWindow | undefined>, map: any, t: any, deviceMapPath : MapPath | undefined, showDistance : boolean) => {
   if (device.lat == null || device.lng == null) return;
   const datePosition: Date = convertUTCDateToLocalDate(device.lastPositionUTC ?? undefined);
   const dateVisibility: Date = convertUTCDateToLocalDate(device.lastVisibilityUTC ?? undefined);
@@ -29,7 +29,7 @@ const showDeviceGoogleInfoWindow = (device: Device, currentInfoWindows: React.Mu
   const position = new google.maps.LatLng(device.lat, device.lng);
 
   if (currentInfoWindows)
-    currentInfoWindows.current = createGoogleInfoWindow({ open: true, title, content, position, map, currentInfoWindows: currentInfoWindows.current });
+    currentInfoWindows.current = googleInfoWindow({ open: true, title, content, position, map, currentInfoWindows: currentInfoWindows.current });
 };
 
-export default showDeviceGoogleInfoWindow;
+export default googleShowDeviceInfoWindow;
