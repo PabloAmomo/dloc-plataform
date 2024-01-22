@@ -26,7 +26,7 @@ const GeoMapButtons = () => {
   };
 
   /** Center on Device  */
-  const handleCenteronDevice = (device: Device) => onActions.current.centerOnDevice(device, true, true);
+  const handleCenterOnDevice = (device: Device) => onActions.current.centerOnDevice(device, true, true);
 
   /** Center on my location  */
   const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, false);
@@ -38,7 +38,7 @@ const GeoMapButtons = () => {
     <Box sx={buttonsContainerProps}>
       {devices && devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei)).map((device) => (
         <Box sx={{...buttonDeviceContainerProps }}>
-          <IconButton onClick={() => handleCenteronDevice(device)} size="large">
+          <IconButton onClick={() => handleCenterOnDevice(device)} size="large">
             <MyLocationIcon fontSize={"small"} htmlColor={centerOn ? 'green' : 'inherit'} />
             <Typography variant="caption" color={'black'} ml={1} >{device.params.name}</Typography>
           </IconButton>

@@ -60,7 +60,7 @@ const GoogleMap = () => {
         return;
       }
       setCenterOn(device);
-      googleFitAndZoom(true, true, { map, devices: [device] });
+      googleFitAndZoom(true, true, { map, devices: [device], changeZoom });
     },
 
     showPath: (showPath: boolean) => setShowPath(showPath),
