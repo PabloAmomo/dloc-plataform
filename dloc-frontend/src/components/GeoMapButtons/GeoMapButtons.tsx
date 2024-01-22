@@ -26,7 +26,7 @@ const GeoMapButtons = () => {
   };
 
   /** Center on Device  */
-  const handleCenteronDevice = (device: Device) => onActions.current.centerOnDevice(device, true);
+  const handleCenteronDevice = (device: Device) => onActions.current.centerOnDevice(device, true, true);
 
   /** Center on my location  */
   const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, false);
