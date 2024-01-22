@@ -133,6 +133,12 @@ const GoogleMap = () => {
             strokeOpacity: mapPath.strokeOpacity,
             strokeWeight: mapPath.strokeWeight,
             path: route,
+            icons: [
+              {
+                icon: { path: google.maps.SymbolPath.FORWARD_OPEN_ARROW },
+                offset: '50%',
+              },
+            ],
           });
           newPathToDraw[key] = {
             start: { lat: route[0].lat(), lng: route[0].lng() },
@@ -162,7 +168,7 @@ const GoogleMap = () => {
     <>
       <GMap
         mapContainerStyle={{ width: '100%', height: '100%' }}
-        center={ config.map.initCenter}
+        center={config.map.initCenter}
         onLoad={onLoad}
         onUnmount={onUnmount}
         onDragEnd={handleOnDragEnd}
