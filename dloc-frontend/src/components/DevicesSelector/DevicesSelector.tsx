@@ -4,7 +4,6 @@ import { ReactNode, useRef } from 'react';
 import { useDevicesContext } from 'context/DevicesProvider';
 import { useTranslation } from 'react-i18next';
 import LocationOff from '@mui/icons-material/LocationOff';
-import removeFromArray from 'functions/removeIdFromArray';
 
 const menuProps = { PaperProps: { style: { width: 200 } } };
 const noBorder = { border: 0, borderWidth: '0!important' };
@@ -28,7 +27,7 @@ const DevicesSelector = ({
 
   const handleHiddenDevicesChange = (event: SelectChangeEvent<typeof showDevices>) => {
     const { value } = event.target;
-    const newValue: string[] = typeof value === 'string' ? value.split(',') : value;
+    var newValue: string[] = typeof value === 'string' ? value.split(',') : value;
 
     /** All Selected */
     if (newValue.includes('0') && !showDevices.includes('0')) {
@@ -39,10 +38,10 @@ const DevicesSelector = ({
       newValue.length = 0;
     } else if (newValue.includes('0') && newValue.length > 1) {
     /** Unselect one from All Selected */
-      removeFromArray(newValue, '0');
+      newValue = newValue.filter((item: string) => item !== '0');
       const imei = newValue[0];
       devices.forEach((item: Device) => imei !== item.imei && newValue.push(item.imei));
-      removeFromArray(newValue, imei);
+      newValue = newValue.filter((item: string) => item !== imei);
     } else if (!newValue.includes('0') && newValue.length === devices.length) {
     /** All selected */
       newValue.length = 0;

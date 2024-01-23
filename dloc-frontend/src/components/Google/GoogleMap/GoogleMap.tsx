@@ -55,7 +55,7 @@ const GoogleMap = () => {
     centerBounds: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, devices, showDevices, myPosition }),
     centerMyLocation: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, myPosition }),
     centerOnDevice: (device: Device, reset: boolean, changeZoom: boolean) => {
-      if (reset && centerOn !== undefined) {
+      if (reset && centerOn !== undefined && centerOn.imei === device.imei) {
         setCenterOn(undefined);
         return;
       }

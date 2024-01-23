@@ -38,10 +38,10 @@ const GeoMapButtons = () => {
   return (
     <Box sx={buttonsContainerProps}>
       {devices && devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei)).map((device) => (
-        <Box key={device.imei} sx={{...buttonDeviceContainerProps, backgroundColor: (centerOn ? 'rgba(0, 0, 0, 0.5)' : backgroundColor) }}>
+        <Box key={device.imei} sx={{...buttonDeviceContainerProps, backgroundColor: ((centerOn && centerOn.imei === device.imei) ? 'rgba(0, 0, 0, 0.5)' : backgroundColor) }}>
           <IconButton onClick={() => handleCenterOnDevice(device)} size="large">
-            <MyLocationIcon fontSize={"small"} htmlColor={centerOn ? 'white' : 'inherit'} />
-            <Typography variant="caption" color={centerOn ? 'white' : 'black'} ml={1} >{device.params.name}</Typography>
+            <MyLocationIcon fontSize={"small"} htmlColor={(centerOn && centerOn.imei === device.imei) ? 'white' : 'inherit'} />
+            <Typography variant="caption" color={(centerOn && centerOn.imei === device.imei) ? 'white' : 'black'} ml={1} >{device.params.name}</Typography>
           </IconButton>
         </Box>
       ))}

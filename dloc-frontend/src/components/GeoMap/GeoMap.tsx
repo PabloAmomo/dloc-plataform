@@ -1,5 +1,5 @@
 import { GetPositionsResult } from 'models/GetPositionsResult';
-import { Grid, LinearProgress, Typography } from '@mui/material';
+import { LinearProgress } from '@mui/material';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useDevicesContext } from 'context/DevicesProvider';
 import { useMapContext } from 'context/MapProvider';
@@ -10,20 +10,16 @@ import GeoMapBottomMenu from 'components/GeoMapBottomMenu/GeoMapBottomMenu';
 import GeoMapButtons from 'components/GeoMapButtons/GeoMapButtons';
 import getPositions from 'services/getPositions/getPositions';
 import GoogleMap from 'components/Google/GoogleMap/GoogleMap';
+import LastUpdateInfo from 'components/LastUpdateInfo/LastUpdateInfo';
 import logError from 'functions/logError';
 import processDevices from 'functions/processDevices';
-import { useTranslation } from 'react-i18next';
-import formatDate from 'functions/formatDate';
 
 function GeoMap() {
   const [tick, setTick] = useState<number>(0);
   const { addSnackbar } = useSnackContext();
   const { devices, setDevices } = useDevicesContext();
   const { isLoading, setIsLoading, minutes } = useMapContext();
-  const { lastUpdate } = useDevicesContext();
-  const { t } = useTranslation();
   const abortAxios = useRef<AbortController>();
-  const dateText: string = lastUpdate ? formatDate(lastUpdate, t('dateString')) ?? '-' : '-';
 
   /** Update all device positions */
   useEffect(() => {
@@ -72,11 +68,7 @@ function GeoMap() {
         <GeoMapButtons />
 
         {/* Last update */}
-        <Grid item xs={'auto'} sx={{ position: 'absolute', bottom: '.25rem', left: '.25rem', backgroundColor: 'rgba(255, 255, 255, 0.75)', p: '0 4px 0 4px', borderRadius: '4px' }}>
-          <Typography variant="caption" color="textSecondary" sx={{ fontSize: '0.75rem' }}>
-            {`${t('lastUpdate')} `}<b>{dateText}</b>
-          </Typography>
-        </Grid>
+        <LastUpdateInfo />
 
         {/* Linear Loading */}
         <ContainerTop height={isLoading ? 4 : 0}>
