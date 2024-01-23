@@ -31,13 +31,19 @@ const GeoMapButtons = () => {
   const handleCenterOnDevice = (device: Device) => onActions.current.centerOnDevice(device, true, true);
 
   /** Center on my location  */
-  const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, false);
+  const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, true);
 
   /** Show or hide path  */
   const handleShowPath = () => onActions.current.showPath(!showPath);
 
   /** Filter devices */
   const filteredDevices: Device[] = !devices ? [] : devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei));
+
+  /**  */
+  useEffect(() => {
+    if (!zoomChanged && !mapMoved && centerOn) setCenterOn(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoomChanged, mapMoved, centerOn]);
 
   /** Release centerOn if device is not in filteredDevices */
   useEffect(() => {
@@ -49,7 +55,10 @@ const GeoMapButtons = () => {
   return (
     <Box sx={buttonsContainerProps}>
       {filteredDevices.map((device) => (
-        <Box key={device.imei} sx={{ ...buttonDeviceContainerProps, backgroundColor: centerOn?.imei === device.imei ? 'rgba(0, 0, 0, 0.5)' : backgroundColorProp }}>
+        <Box
+          key={device.imei}
+          sx={{ ...buttonDeviceContainerProps, backgroundColor: centerOn?.imei === device.imei ? 'rgba(0, 0, 0, 0.5)' : backgroundColorProp }}
+        >
           <IconButton onClick={() => handleCenterOnDevice(device)} size="large">
             <MyLocationIcon fontSize={'small'} htmlColor={centerOn?.imei === device.imei ? 'white' : 'inherit'} />
             <Typography variant="caption" color={centerOn?.imei === device.imei ? 'white' : 'black'} ml={1}>
