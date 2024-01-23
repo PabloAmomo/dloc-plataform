@@ -5,7 +5,7 @@ import { Location } from 'models/Location';
 import { MapPath } from 'models/MapPath';
 import { Path } from 'models/Path';
 import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
-import distanceFromLatLngInMeters from './getDistanceFromLatLonInMeters';
+import distanceFromLatLngInMeters from './distanceFromLatLngInMeters';
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   const newMapPaths = [...(mapPaths ?? [])];
