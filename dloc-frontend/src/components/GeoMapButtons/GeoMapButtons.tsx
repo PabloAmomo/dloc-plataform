@@ -28,10 +28,20 @@ const GeoMapButtons = () => {
   };
 
   /** Center on Device  */
-  const handleCenterOnDevice = (device: Device) => onActions.current.centerOnDevice(device, true, true);
+  const handleCenterOnDevice = (device: Device) => {
+    if (centerOn !== undefined && centerOn.imei === device.imei) {
+      setCenterOn(undefined);
+      return;
+    }
+    setCenterOn(device);
+    onActions.current.centerOnDevice(device, true);
+  }
 
   /** Center on my location  */
-  const handleCenterMyLocation = () => onActions.current.centerMyLocation(false, true);
+  const handleCenterMyLocation = () => {
+    if (centerOn !== undefined) setCenterOn(undefined);
+    onActions.current.centerMyLocation(false, true);
+  }
 
   /** Show or hide path  */
   const handleShowPath = () => onActions.current.showPath(!showPath);

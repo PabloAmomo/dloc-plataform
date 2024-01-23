@@ -32,7 +32,6 @@ const GoogleMap = () => {
     setShowPath,
     mapPaths,
     addMapPaths,
-    setCenterOn,
     centerOn,
   } = useMapContext();
   const { devices } = useDevicesContext();
@@ -54,15 +53,7 @@ const GoogleMap = () => {
 
     centerBounds: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, devices, showDevices, myPosition }),
     centerMyLocation: (zoomState: boolean, movedState: boolean) => googleFitAndZoom(zoomState, movedState, { map, myPosition }),
-    centerOnDevice: (device: Device, reset: boolean, changeZoom: boolean) => {
-      if (reset && centerOn !== undefined && centerOn.imei === device.imei) {
-        setCenterOn(undefined);
-        return;
-      }
-      setCenterOn(device);
-      googleFitAndZoom(true, true, { map, devices: [device], changeZoom });
-    },
-
+    centerOnDevice: (device: Device, changeZoom: boolean) => googleFitAndZoom(true, true, { map, devices: [device], changeZoom }),
     showPath: (showPath: boolean) => setShowPath(showPath),
 
     getZoom: () => map?.getZoom() ?? 0,
@@ -103,7 +94,7 @@ const GoogleMap = () => {
     setUserDevices(devices);
 
     /** Center indevice, or bound all if not zoom or map moved by user */
-    if (centerOn) onActions.current.centerOnDevice(centerOn, false, false);
+    if (centerOn) onActions.current.centerOnDevice(centerOn, false);
     else if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
