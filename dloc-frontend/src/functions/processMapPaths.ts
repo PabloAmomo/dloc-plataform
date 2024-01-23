@@ -5,7 +5,7 @@ import { Location } from 'models/Location';
 import { MapPath } from 'models/MapPath';
 import { Path } from 'models/Path';
 import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
-import getDistanceFromLatLonInMeters from './getDistanceFromLatLonInMeters';
+import distanceFromLatLngInMeters from './getDistanceFromLatLonInMeters';
 
 const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
   const newMapPaths = [...(mapPaths ?? [])];
@@ -61,7 +61,7 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
 
     /** Calculate distance */
     newPaths.forEach((path: Path) => {
-      mapPath.distance += getDistanceFromLatLonInMeters(path.start.lat, path.start.lng, path.end.lat, path.end.lng);
+      mapPath.distance += distanceFromLatLngInMeters(path.start.lat, path.start.lng, path.end.lat, path.end.lng);
     });
    
     /** Update paths */

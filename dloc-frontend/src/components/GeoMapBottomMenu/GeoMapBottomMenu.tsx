@@ -2,10 +2,9 @@ import { Box, Grid, SxProps, } from '@mui/material';
 import { memo, useEffect } from 'react';
 import { useMapContext } from 'context/MapProvider';
 import { UserSettings } from 'models/UserSettings';
+import {userSettingsGet, userSettingsSet } from 'functions/userSettings';
 import DevicesSelector from 'components/DevicesSelector/DevicesSelector';
 import IntervalSelector from 'components/IntervalSelector/IntervalSelector';
-import userSettingsGet from 'functions/userSettingsGet';
-import userSettingsSet from 'functions/userSettingsSet';
 
 const middleSxProps: SxProps = { flexGrow: '1!important', display: 'flex', pl: '0!important', pr: '0!important' };
 const containerSxProps: SxProps = {

@@ -4,4 +4,8 @@ import getEmptyUserSettings from "./getEmptyUserSettings";
 const userSettingsGet = () : UserSettings => {
   return JSON.parse(localStorage.getItem("userSettings") ?? JSON.stringify(getEmptyUserSettings()));
 }
-export default  userSettingsGet;
+const userSettingsSet = (settings: UserSettings) => {
+  localStorage.setItem("userSettings", JSON.stringify(settings));
+}
+
+export { userSettingsSet, userSettingsGet};

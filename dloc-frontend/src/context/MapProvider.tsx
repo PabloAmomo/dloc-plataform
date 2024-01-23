@@ -1,13 +1,13 @@
-import getMyPosition from 'functions/getMyPosition';
-import processMapPaths from 'functions/processMapPaths';
-import userSettingsGet from 'functions/userSettingsGet';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Device } from 'models/Device';
 import { LatLng } from 'models/LatLng';
 import { MapActions } from 'models/MapActions';
 import { MapPath } from 'models/MapPath';
 import { MapProviderInterface } from 'models/MapProviderInterface';
 import { UserSettings } from 'models/UserSettings';
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import {userSettingsGet} from 'functions/userSettings';
+import getMyPosition from 'functions/getMyPosition';
+import processMapPaths from 'functions/processMapPaths';
 
 const emptyActions = {
   centerBounds: () => {},

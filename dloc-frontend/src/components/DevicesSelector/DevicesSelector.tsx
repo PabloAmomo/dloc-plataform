@@ -1,10 +1,10 @@
-import LocationOff from '@mui/icons-material/LocationOff';
 import { Box, Checkbox, Chip, FormControl, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { useDevicesContext } from 'context/DevicesProvider';
-import removeFromArray from 'functions/removeIdFromArray';
 import { Device } from 'models/Device';
 import { ReactNode, useRef } from 'react';
+import { useDevicesContext } from 'context/DevicesProvider';
 import { useTranslation } from 'react-i18next';
+import LocationOff from '@mui/icons-material/LocationOff';
+import removeFromArray from 'functions/removeIdFromArray';
 
 const menuProps = { PaperProps: { style: { width: 200 } } };
 const noBorder = { border: 0, borderWidth: '0!important' };
