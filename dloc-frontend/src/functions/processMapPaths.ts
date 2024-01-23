@@ -39,11 +39,6 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
     const newPaths: Path[] = Array.from(paths, ([name, value]) => value);
     newPaths.sort((a: Path, b: Path) => convertUTCDateToLocalDate(a.dateTimeUTC).getTime() - convertUTCDateToLocalDate(b.dateTimeUTC).getTime());
 
-    /** Max path length, remove execces paths */
-    while (newPaths.length > config.map.maxPathsByDevice) {
-      newPaths.shift();
-    }
-
     /** Correct paths to start and end correctly */
     mapPath.distance = 0;
     newPaths.forEach((path: Path, index: number) => {
@@ -51,10 +46,24 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) => {
       else {
         const prevPath: Path = newPaths[index - 1];
         prevPath.end = { ...path.start };
-        mapPath.distance += getDistanceFromLatLonInMeters(prevPath.start.lat, prevPath.start.lng, prevPath.end.lat, prevPath.end.lng);
       }
     });
 
+    /** remove path point (Same start to end) */
+    for (let i = newPaths.length - 2; i > 0; i--) {
+      if (newPaths[i].start.lat === newPaths[i].end.lat && newPaths[i].start.lng === newPaths[i].end.lng) newPaths.splice(i, 1);
+    }
+
+    /** Max path length, remove execces paths */
+    while (newPaths.length > config.map.maxPathsByDevice) {
+      newPaths.shift();
+    }
+
+    /** Calculate distance */
+    newPaths.forEach((path: Path) => {
+      mapPath.distance += getDistanceFromLatLonInMeters(path.start.lat, path.start.lng, path.end.lat, path.end.lng);
+    });
+   
     /** Update paths */
     mapPath.path = newPaths;
   }

@@ -139,9 +139,11 @@ const GoogleMap = () => {
   useEffect(() => {
     const newPathToDraw: any = { ...pathsToDraw };
     const keys: string[] = [];
+    const mapPathDirectionIcon = { icon: { path: google?.maps?.SymbolPath?.FORWARD_OPEN_ARROW }, offset: '50%' };
+    const mapPathStartIcon = { icon: { path: google?.maps?.SymbolPath?.CIRCLE }, offset: '50%' };
 
-    mapPaths?.forEach((mapPath: MapPath, index: number) => {
-      mapPath.path?.forEach((path: Path) => {
+    mapPaths?.forEach((mapPath: MapPath) => {
+      mapPath.path?.forEach((path: Path, index: number) => {
         const route = [new google.maps.LatLng(path.start.lat, path.start.lng), new google.maps.LatLng(path.end.lat, path.end.lng)];
         const lastRoute = route[route.length - 1];
         const key: string = `${mapPath.imei}-${route[0].lat()}-${route[0].lng()}-${lastRoute.lat()}-${lastRoute.lng()}`;
@@ -155,12 +157,7 @@ const GoogleMap = () => {
             strokeOpacity: mapPath.strokeOpacity,
             strokeWeight: mapPath.strokeWeight,
             path: route,
-            icons: [
-              {
-                icon: { path: google.maps.SymbolPath.FORWARD_OPEN_ARROW },
-                offset: '50%',
-              },
-            ],
+            icons: index === 0 ? [mapPathStartIcon] : index === mapPath.path.length - 1 ? [] : [mapPathDirectionIcon],
           });
           newPathToDraw[key] = {
             start: { lat: route[0].lat(), lng: route[0].lng() },

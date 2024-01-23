@@ -1,11 +1,8 @@
-import { Box, Grid, SxProps, Typography } from '@mui/material';
-import { useDevicesContext } from 'context/DevicesProvider';
+import { Box, Grid, SxProps, } from '@mui/material';
 import { memo, useEffect } from 'react';
 import { useMapContext } from 'context/MapProvider';
 import { UserSettings } from 'models/UserSettings';
-import { useTranslation } from 'react-i18next';
 import DevicesSelector from 'components/DevicesSelector/DevicesSelector';
-import formatDate from 'functions/formatDate';
 import IntervalSelector from 'components/IntervalSelector/IntervalSelector';
 import userSettingsGet from 'functions/userSettingsGet';
 import userSettingsSet from 'functions/userSettingsSet';
@@ -28,9 +25,6 @@ const containerSxProps: SxProps = {
 
 function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = false }: { hideIntervalSelector?: boolean; hideDevicesSelector?: boolean }) {
   const { isLoading, minutes, setMinutes, showDevices, setShowDevices } = useMapContext();
-  const { lastUpdate } = useDevicesContext();
-  const { t } = useTranslation();
-  const dateText: string = lastUpdate ? formatDate(lastUpdate, t('dateString')) ?? '-' : '-';
 
   useEffect(() => {
     const userSettings: UserSettings = userSettingsGet();
@@ -42,13 +36,6 @@ function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = 
   return (
     <Box className="boxShadow6-inverted" sx={containerSxProps}>
       <Grid container spacing={2} sx={{ flexWrap: 'nowrap' }}>
-        {/* Last update */}
-        <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
-          <Typography variant="caption" color="textSecondary" sx={{ fontSize: '0.75rem' }}>
-            {`${t('lastUpdate')} `}<b>{dateText}</b>
-          </Typography>
-        </Grid>
-
         {/* Interval Selector */}
         {!hideIntervalSelector && (
           <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
