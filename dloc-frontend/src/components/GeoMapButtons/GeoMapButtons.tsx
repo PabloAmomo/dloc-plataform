@@ -8,9 +8,9 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import RampLeftIcon from '@mui/icons-material/RampLeft';
 import { useEffect } from 'react';
 
-const backgroundColor = 'rgba(0, 0, 0, 0.1)';
+const backgroundColorProp = 'rgba(0, 0, 0, 0.1)';
 const buttonsContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
-const buttonContainerProps: SxProps = { backgroundColor, borderRadius: '50%', ml: 1 };
+const buttonContainerProps: SxProps = { backgroundColor: backgroundColorProp, borderRadius: '50%', ml: 1 };
 const buttonDeviceContainerProps: SxProps = { ...buttonContainerProps, borderRadius: '8px', display: 'flex', flexDirection: 'column', placeContent: 'center' };
 
 const GeoMapButtons = () => {
@@ -49,7 +49,7 @@ const GeoMapButtons = () => {
   return (
     <Box sx={buttonsContainerProps}>
       {filteredDevices.map((device) => (
-        <Box key={device.imei} sx={{ ...buttonDeviceContainerProps, backgroundColor: centerOn?.imei === device.imei ? 'rgba(0, 0, 0, 0.5)' : backgroundColor }}>
+        <Box key={device.imei} sx={{ ...buttonDeviceContainerProps, backgroundColor: centerOn?.imei === device.imei ? 'rgba(0, 0, 0, 0.5)' : backgroundColorProp }}>
           <IconButton onClick={() => handleCenterOnDevice(device)} size="large">
             <MyLocationIcon fontSize={'small'} htmlColor={centerOn?.imei === device.imei ? 'white' : 'inherit'} />
             <Typography variant="caption" color={centerOn?.imei === device.imei ? 'white' : 'black'} ml={1}>
