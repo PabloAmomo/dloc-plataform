@@ -6,6 +6,7 @@ import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import RampLeftIcon from '@mui/icons-material/RampLeft';
+import { useEffect } from 'react';
 
 const backgroundColor = 'rgba(0, 0, 0, 0.1)';
 const buttonsContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
@@ -14,7 +15,7 @@ const buttonDeviceContainerProps: SxProps = { ...buttonContainerProps, borderRad
 
 const GeoMapButtons = () => {
   const { devices } = useDevicesContext();
-  const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved, showPath, showDevices, centerOn } = useMapContext();
+  const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved, showPath, showDevices, centerOn, setCenterOn } = useMapContext();
   const boundColor: string = (mapMoved ?? false) || (zoomChanged ?? false) ? 'red' : 'inherit';
   const showPathColor: string = !showPath ?? false ? 'red' : 'inherit';
 
@@ -35,13 +36,25 @@ const GeoMapButtons = () => {
   /** Show or hide path  */
   const handleShowPath = () => onActions.current.showPath(!showPath);
 
+  /** Filter devices */
+  const filteredDevices: Device[] = !devices ? [] : devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei));
+
+  /** Release centerOn if device is not in filteredDevices */
+  useEffect(() => {
+    const filter: Device[] = filteredDevices.filter((device: Device) => centerOn?.imei === device.imei);
+    if (filter.length === 0) setCenterOn(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [devices]);
+
   return (
     <Box sx={buttonsContainerProps}>
-      {devices && devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei)).map((device) => (
-        <Box key={device.imei} sx={{...buttonDeviceContainerProps, backgroundColor: ((centerOn && centerOn.imei === device.imei) ? 'rgba(0, 0, 0, 0.5)' : backgroundColor) }}>
+      {filteredDevices.map((device) => (
+        <Box key={device.imei} sx={{ ...buttonDeviceContainerProps, backgroundColor: centerOn?.imei === device.imei ? 'rgba(0, 0, 0, 0.5)' : backgroundColor }}>
           <IconButton onClick={() => handleCenterOnDevice(device)} size="large">
-            <MyLocationIcon fontSize={"small"} htmlColor={(centerOn && centerOn.imei === device.imei) ? 'white' : 'inherit'} />
-            <Typography variant="caption" color={(centerOn && centerOn.imei === device.imei) ? 'white' : 'black'} ml={1} >{device.params.name}</Typography>
+            <MyLocationIcon fontSize={'small'} htmlColor={centerOn?.imei === device.imei ? 'white' : 'inherit'} />
+            <Typography variant="caption" color={centerOn?.imei === device.imei ? 'white' : 'black'} ml={1}>
+              {device.params.name}
+            </Typography>
           </IconButton>
         </Box>
       ))}
