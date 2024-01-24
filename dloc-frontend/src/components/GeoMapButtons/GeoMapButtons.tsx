@@ -1,23 +1,30 @@
-import { Box, IconButton, SxProps, Typography } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import { Device } from 'models/Device';
 import { useDevicesContext } from 'context/DevicesProvider';
 import { useMapContext } from 'context/MapProvider';
 import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
-import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import RampLeftIcon from '@mui/icons-material/RampLeft';
 import { useEffect } from 'react';
+import GeoMapDeviceButton from 'components/GeoMapDeviceButton/GeoMapDeviceButton';
+import GeoMapButton from 'components/GeoMapButton/GeoMapButton';
 
-const backgroundColorProp = 'rgba(0, 0, 0, 0.1)';
+const unSelectBackgroundColorProp: string = 'rgba(0, 0, 0, 0.1)';
+const selectBackgroundColorProp: string = 'rgba(0, 0, 0, 0.5)';
+const unSelectTextColorProp: string = 'red';
+const selectTextColorProp: string = 'white';
 const buttonsContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
-const buttonContainerProps: SxProps = { backgroundColor: backgroundColorProp, borderRadius: '50%', ml: 1 };
+const buttonContainerProps: SxProps = { backgroundColor: unSelectBackgroundColorProp, borderRadius: '50%', ml: 1 };
 const buttonDeviceContainerProps: SxProps = { ...buttonContainerProps, borderRadius: '8px', display: 'flex', flexDirection: 'column', placeContent: 'center' };
 
 const GeoMapButtons = () => {
   const { devices } = useDevicesContext();
   const { zoomChanged, mapMoved, onActions, setZoomChanged, setMapMoved, showPath, showDevices, centerOn, setCenterOn } = useMapContext();
-  const boundColor: string = (mapMoved ?? false) || (zoomChanged ?? false) ? 'red' : 'inherit';
-  const showPathColor: string = !showPath ?? false ? 'red' : 'inherit';
+  const boundState = !mapMoved && !zoomChanged;
+  const boundColor: string = !boundState ? unSelectTextColorProp : selectTextColorProp;
+  const showPathColor: string = !showPath ? unSelectTextColorProp : selectTextColorProp;
+  const boundSx: SxProps = { backgroundColor: boundState ? selectBackgroundColorProp : unSelectBackgroundColorProp };
+  const showPathSx: SxProps = { backgroundColor: showPath ? selectBackgroundColorProp : unSelectBackgroundColorProp };
 
   /** Set automatic bounds  */
   const handleClickCenterBounds = () => {
@@ -35,13 +42,13 @@ const GeoMapButtons = () => {
     }
     setCenterOn(device);
     onActions.current.centerOnDevice(device, true);
-  }
+  };
 
   /** Center on my location  */
   const handleCenterMyLocation = () => {
     if (centerOn !== undefined) setCenterOn(undefined);
     onActions.current.centerMyLocation(false, true);
-  }
+  };
 
   /** Show or hide path  */
   const handleShowPath = () => onActions.current.showPath(!showPath);
@@ -65,36 +72,32 @@ const GeoMapButtons = () => {
   return (
     <Box sx={buttonsContainerProps}>
       {filteredDevices.map((device) => (
-        <Box
+        <GeoMapDeviceButton
           key={device.imei}
-          sx={{ ...buttonDeviceContainerProps, backgroundColor: centerOn?.imei === device.imei ? 'rgba(0, 0, 0, 0.5)' : backgroundColorProp }}
-        >
-          <IconButton onClick={() => handleCenterOnDevice(device)} size="large">
-            <MyLocationIcon fontSize={'small'} htmlColor={centerOn?.imei === device.imei ? 'white' : 'inherit'} />
-            <Typography variant="caption" color={centerOn?.imei === device.imei ? 'white' : 'black'} ml={1}>
-              {device.params.name}
-            </Typography>
-          </IconButton>
-        </Box>
+          device={device}
+          onClick={handleCenterOnDevice}
+          sx={buttonDeviceContainerProps}
+          selectTextColorProp={selectTextColorProp}
+          unSelectTextColorProp="black"
+          selectBackgroundColorProp={selectBackgroundColorProp}
+          unSelectBackgroundColorProp={unSelectBackgroundColorProp}
+        />
       ))}
 
-      <Box sx={buttonContainerProps}>
-        <IconButton onClick={handleShowPath} size="large">
-          <RampLeftIcon htmlColor={showPathColor} fontSize="inherit" />
-        </IconButton>
-      </Box>
+      {/* show path */}
+      <GeoMapButton onClick={handleShowPath} sx={{ ...buttonContainerProps, ...showPathSx }}>
+        <RampLeftIcon htmlColor={showPathColor} fontSize="inherit" />
+      </GeoMapButton>
 
-      <Box sx={buttonContainerProps}>
-        <IconButton onClick={handleCenterMyLocation} size="large">
-          <PersonPinCircleIcon fontSize="inherit" />
-        </IconButton>
-      </Box>
+      {/* center on my location */}
+      <GeoMapButton onClick={handleCenterMyLocation} sx={buttonContainerProps}>
+        <PersonPinCircleIcon fontSize="inherit" />
+      </GeoMapButton>
 
-      <Box sx={buttonContainerProps}>
-        <IconButton onClick={handleClickCenterBounds} size="large">
-          <FilterCenterFocusIcon htmlColor={boundColor} fontSize="inherit" />
-        </IconButton>
-      </Box>
+      {/* Center on on bounds */}
+      <GeoMapButton onClick={handleClickCenterBounds} sx={{ ...buttonContainerProps, ...boundSx }}>
+        <FilterCenterFocusIcon htmlColor={boundColor} fontSize="inherit" />
+      </GeoMapButton>
     </Box>
   );
 };
