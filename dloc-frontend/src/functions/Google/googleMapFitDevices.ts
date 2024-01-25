@@ -30,6 +30,7 @@ const googleMapFitDevices = ({ map, myPosition, showDevices, devices, changeZoom
 
   /** Only Device Position */
   if (count === 1 && !myPosition) {
+      console.log('Center', bounds.getCenter().lat(), bounds.getCenter().lng());
     map.setCenter(bounds.getCenter());
     if (changeZoom) map.setZoom(config.map.maxZoom);
     return;
