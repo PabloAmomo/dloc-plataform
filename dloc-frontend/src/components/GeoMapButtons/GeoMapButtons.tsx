@@ -31,22 +31,25 @@ const GeoMapButtons = () => {
     if (!zoomChanged && !mapMoved) {
       setZoomChanged(true);
       setMapMoved(true);
-    } else onActions.current.centerBounds(false, false);
+    } else {
+      setCenterOn(undefined);
+      onActions.current.centerBounds(false, false);
+    }
   };
 
   /** Center on Device  */
   const handleCenterOnDevice = (device: Device) => {
-    if (centerOn !== undefined && centerOn.imei === device.imei) {
+    if (centerOn && centerOn.device.imei === device.imei) {
       setCenterOn(undefined);
       return;
     }
-    setCenterOn(device);
-    onActions.current.centerOnDevice(device, true);
+    setCenterOn({ device, changeZoom: true });
   };
 
   /** Center on my location  */
   const handleCenterMyLocation = () => {
     if (centerOn !== undefined) setCenterOn(undefined);
+
     onActions.current.centerMyLocation(false, true);
   };
 
@@ -56,15 +59,10 @@ const GeoMapButtons = () => {
   /** Filter devices */
   const filteredDevices: Device[] = !devices ? [] : devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei));
 
-  /**  */
-  useEffect(() => {
-    if (!zoomChanged && !mapMoved && centerOn) setCenterOn(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zoomChanged, mapMoved, centerOn]);
-
   /** Release centerOn if device is not in filteredDevices */
   useEffect(() => {
-    const filter: Device[] = filteredDevices.filter((device: Device) => centerOn?.imei === device.imei);
+    const filter: Device[] = filteredDevices.filter((device: Device) => centerOn?.device.imei === device.imei);
+
     if (filter.length === 0) setCenterOn(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices]);

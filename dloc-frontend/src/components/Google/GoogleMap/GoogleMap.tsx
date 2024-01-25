@@ -96,11 +96,9 @@ const GoogleMap = () => {
 
     /** Center indevice, or bound all if not zoom or map moved by user */
     if (centerOn) {
-      const newCenterOn = devices.find((device: Device) => device.imei === centerOn.imei); 
-      setCenterOn (newCenterOn)
-      onActions.current.centerOnDevice(centerOn, false);
-    }
-    else if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
+      const device: Device | undefined = devices.find((device: Device) => device.imei === centerOn.device.imei);
+      if (device) setCenterOn({ device, changeZoom: false });
+    } else if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devices, map, isLoaded]);
 

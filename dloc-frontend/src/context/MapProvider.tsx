@@ -8,6 +8,7 @@ import { UserSettings } from 'models/UserSettings';
 import {userSettingsGet} from 'functions/userSettings';
 import getMyPosition from 'functions/getMyPosition';
 import processMapPaths from 'functions/processMapPaths';
+import { CenterOn } from 'models/CenterOn';
 
 const emptyActions = {
   centerBounds: () => {},
@@ -54,7 +55,7 @@ export function MapActionsProvider({ children }: { children: any }) {
   const [showDevices, setShowDevices] = useState<string[]>(userSettings.geoMap.showDevices ?? ['0']);
   const [tick, setTick] = useState<number>(0);
   const [mapPaths, setMapPaths] = useState<MapPath[]>([]);
-  const [centerOn, setCenterOn] = useState<Device>();
+  const [centerOn, setCenterOn] = useState<CenterOn | undefined>();
 
   const onActions = useRef<MapActions>(emptyActions);
 

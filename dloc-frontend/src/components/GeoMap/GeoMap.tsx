@@ -18,7 +18,7 @@ function GeoMap() {
   const [tick, setTick] = useState<number>(0);
   const { addSnackbar } = useSnackContext();
   const { devices, setDevices } = useDevicesContext();
-  const { isLoading, setIsLoading, minutes } = useMapContext();
+  const { isLoading, setIsLoading, minutes, centerOn, onActions } = useMapContext();
   const abortAxios = useRef<AbortController>();
 
   /** Update all device positions */
@@ -46,6 +46,12 @@ function GeoMap() {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
+
+  /** Center on device */
+  useEffect(() => {
+    if (!centerOn) return;
+    onActions.current.centerOnDevice(centerOn.device, centerOn.changeZoom);
+  }, [centerOn, onActions]);
 
   /** Devices changed */
   // eslint-disable-next-line react-hooks/exhaustive-deps

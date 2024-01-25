@@ -23,12 +23,13 @@ const GeoMapDeviceButton = ({
   unSelectBackgroundColorProp,
 }: GeoMapDeviceButtonProps) => {
   const { centerOn } = useMapContext();
+  const isCenterOn: boolean = centerOn?.device?.imei === device.imei;
 
   return (
-    <Box key={device.imei} sx={{ ...sx, backgroundColor: centerOn?.imei === device.imei ? selectBackgroundColorProp : unSelectBackgroundColorProp }}>
+    <Box key={device.imei} sx={{ ...sx, backgroundColor: isCenterOn ? selectBackgroundColorProp : unSelectBackgroundColorProp }}>
       <IconButton onClick={() => onClick(device)} size="large">
-        <MyLocationIcon fontSize={'small'} htmlColor={centerOn?.imei === device.imei ? selectTextColorProp : 'inherit'} />
-        <Typography variant="caption" color={centerOn?.imei === device.imei ? selectTextColorProp : unSelectTextColorProp} ml={1}>
+        <MyLocationIcon fontSize={'small'} htmlColor={isCenterOn ? selectTextColorProp : 'inherit'} />
+        <Typography variant="caption" color={isCenterOn ? selectTextColorProp : unSelectTextColorProp} ml={1}>
           {device.params.name}
         </Typography>
       </IconButton>
