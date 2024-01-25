@@ -7,6 +7,9 @@ import { mySqlFormatDateTime } from '../functions/mySqlFormatDateTime';
 import { PositionPacket } from '../../../models/PositionPacket';
 import { printMessage } from '../../../functions/printMessage';
 import mySqlQueryAsync from '../functions/mySqlQueryAsync';
+import { mySqlGetLastPosition } from '../functions/mySqlGetLastPosition';
+import { mySqlGetLastPositionDateTime } from '../functions/mySqlGetLastPositionDateTime';
+import { handleAddDiscarted } from './handleAddDiscarted';
 
 const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 
@@ -18,6 +21,14 @@ const handleUpdateDevice = async (positionPacket: PositionPacket): Promise<Persi
     await handleUpdateLastActivity(positionPacket.imei, positionPacket.remoteAddress);
     printMessage(message);
     return { results: [], error: new Error(errorMsg) };
+  }
+
+  /** Check if data is not old */
+  const result = await mySqlGetLastPositionDateTime(positionPacket);
+  if (result.error) return result;
+  if (result.results.length) {
+    await handleAddDiscarted(positionPacket.imei, positionPacket.remoteAddress, 'old packet - update device', JSON.stringify(positionPacket));
+    return { results: [], error: new Error('old packet - update device') };
   }
 
   /** Update data in device */
@@ -36,7 +47,7 @@ const handleUpdateDevice = async (positionPacket: PositionPacket): Promise<Persi
     /** insert */
     ...data,
     /** update */
-    ...data
+    ...data,
   ];
   const sql = `INSERT INTO device (imei, lastPositionUTC, lat, lng, speed, directionAngle, gsmSignal, batteryLevel, lastVisibilityUTC)
                           VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
