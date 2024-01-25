@@ -10,6 +10,9 @@ const processDevices = (response: GetPositionsResult, devices:Device[]) : Device
       if (newDevices[i].imei === location.imei) {
         const { batteryLevel, directionAngle, gsmSignal, lat, lng, speed, lastPositionUTC, lastVisibilityUTC, locations } = location;
         Object.assign(newDevices[i], { update: Date.now(), batteryLevel, directionAngle, gsmSignal, lat, lng, speed, lastPositionUTC, lastVisibilityUTC, locations });
+        if (location.imei === '869207032620461') {
+          console.log('processDevices', newDevices[i].lastPositionUTC, newDevices[i].lat, newDevices[i].lng);
+        }
         break;
       }
     }

@@ -64,8 +64,15 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) : MapPath[] => 
       mapPath.distance += distanceFromLatLngInMeters(path.start.lat, path.start.lng, path.end.lat, path.end.lng);
     });
    
+    /** Update las time */
+    if (mapPath.path.length > 0) mapPath.lastPositionUTC = mapPath.path[mapPath.path.length - 1].dateTimeUTC;
+
     /** Update paths */
     mapPath.path = newPaths;
+
+    if (mapPath.imei === '869207032620461') {
+      console.log('processMapPaths', mapPath.path[mapPath.path.length - 1].dateTimeUTC, mapPath.path[mapPath.path.length - 1].end.lat, mapPath.path[mapPath.path.length - 1].end.lng);
+    }
   }
 
   /** Return new mapPaths */
