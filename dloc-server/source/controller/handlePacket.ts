@@ -54,19 +54,36 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     /** Create location packet and persist */
     const locationPacket: PositionPacket = createLocationPacket(response.imei, remoteAdd, values);
 
+    /** Update last activity */
+    persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
+      if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
+      // TODO: (updateLastActivity) Process errors when persisting
+    });
+
     if (locationPacket.valid) {
       /** Valid position */
       persistence.addPosition(locationPacket).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting position [${result.error}]`);
         // TODO: (addPosition) Process errors when persisting
       });
+
+      /** Update device */
+      persistence.updateDevice(locationPacket).then((result: PersistenceResult) => {
+        if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating device [${result.error}]`);
+        // TODO: (updateDevice) Process errors when persisting
+
+        if (result.error?.message === 'old packet') {
+          persistence
+            .addDiscarted(locationPacket.imei, locationPacket.remoteAddress, 'old packet - update device', JSON.stringify(locationPacket))
+            .then((result: PersistenceResult) => {
+              // TODO: (addDiscarted) Process errors when persisting
+              if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting discarted [${result.error}]`);
+            });
+        }
+      });
     } else {
       /** Invalid position */
       printMessage(`[${imeiTemp}] (${remoteAdd}) invalid position (NOT 'A') [${data}]`);
-      persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
-        if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
-        // TODO: (updateLastActivity) Process errors when persisting
-      });
     }
 
     response.response = `TRVZP${data.substring(5, 7)}#`;

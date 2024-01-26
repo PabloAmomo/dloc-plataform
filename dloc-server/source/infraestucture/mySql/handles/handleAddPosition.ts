@@ -1,14 +1,11 @@
 import { ConnectionConfig } from 'mysql';
-import { PersistenceResult } from '../../models/PersistenceResult';
+import { getErrorFromPositionPacket } from '../../functions/getErrorFromPositionPacket';
 import { mySqlConnectionConfig } from '../functions/mySqlConnectionConfig';
+import { mySqlFormatDateTime } from '../functions/mySqlFormatDateTime';
+import { PersistenceResult } from '../../models/PersistenceResult';
 import { PositionPacket } from '../../../models/PositionPacket';
 import { printMessage } from '../../../functions/printMessage';
 import mySqlQueryAsync from '../functions/mySqlQueryAsync';
-import { mySqlFormatDateTime } from '../functions/mySqlFormatDateTime';
-import { handleUpdateDevice } from './handleUpdateDevice';
-import { getErrorFromPositionPacket } from '../../functions/getErrorFromPositionPacket';
-import { mySqlGetLastPosition } from '../functions/mySqlGetLastPosition';
-import { handleAddDiscarted } from './handleAddDiscarted';
 
 const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 
@@ -19,14 +16,6 @@ const handleAddPosition = async (positionPacket: PositionPacket): Promise<Persis
     printMessage(message);
     return { results: [], error: new Error(errorMsg) };
   }
-
-  /** Update device */
-  await handleUpdateDevice(positionPacket);
-
-  /** Old packet - discard */
-  const result = await mySqlGetLastPosition(positionPacket);
-  if (result.error) return result;
-  if (result.results.length) return handleAddDiscarted(positionPacket.imei, positionPacket.remoteAddress, 'old packet', JSON.stringify(positionPacket));
 
   /** Add position */
   const params = [

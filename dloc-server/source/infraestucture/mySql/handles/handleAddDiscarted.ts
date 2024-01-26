@@ -1,7 +1,7 @@
 import { ConnectionConfig } from 'mysql';
 import { mySqlConnectionConfig } from '../functions/mySqlConnectionConfig';
-import mySqlQueryAsync from '../functions/mySqlQueryAsync';
 import { PersistenceResult } from '../../models/PersistenceResult';
+import mySqlQueryAsync from '../functions/mySqlQueryAsync';
 
 const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 
