@@ -84,6 +84,31 @@ test('Simulate command [TRVAP89]', async () => {
   });
 });
 
+test('Simulate command [TRVAP14] (ERROR)', async () => {
+  const imei = '869207032612724';
+  const remoteAdd = '127.0.0.1';
+  const data = 'TRVYP14240128A3951.0473N00307.1110E004.6141347056.3004100906600#';
+  await handleData({
+    imei,
+    remoteAdd,
+    data,
+    handlePacket,
+    persistence,
+    conn: {
+      write: (data: string) => {
+        assert.equal(data.startsWith('TRVZP14'), true);
+      },
+      destroy: () => {
+        assert.ok(false, 'connection closed');
+      },
+    },
+  }).then((results) => {
+    assert.equal(results.length, 1);
+    assert.equal(results[0].response.startsWith('TRVZP14'), true);
+    assert.equal(results[0].response.endsWith('#'), true);
+  });
+});
+
 test('Simulate command [TRVAP14]', async () => {
   const imei = '869207032612724';
   const remoteAdd = '127.0.0.1';

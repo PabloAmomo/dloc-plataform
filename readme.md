@@ -5,6 +5,9 @@ This project is a robust and efficient server designed to receive and process GP
 ## DLOC Server
 Server to receive information from GPS Devices.
 
+### Configure GPS Device to send data to server
+-- pending --
+
 ## DLOC Api
 Simple API for consuming data produced by the DLOC-SERVER
 

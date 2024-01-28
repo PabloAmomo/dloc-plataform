@@ -5,7 +5,7 @@ import { HandlePacket } from '../models/HandlePacket';
 import { HandlePacketResult } from '../models/HandlePacketResult';
 import { PositionPacket } from '../models/PositionPacket';
 import { printMessage } from '../functions/printMessage';
-import { REGEX_PACKET_NO_WIFI, REGEX_PACKET_WIFI } from '../functions/packetParseREGEX';
+import { REGEX_PACKET_NO_WIFI, REGEX_PACKET_SIMPLE, REGEX_PACKET_WIFI } from '../functions/packetParseREGEX';
 import { HandlePacketProps } from '../models/HandlePacketProps';
 
 const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }: HandlePacketProps): Promise<HandlePacketResult> => {
@@ -45,6 +45,11 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
       values = data.match(REGEX_PACKET_NO_WIFI) ?? [];
     }
 
+    if (values == null || (values?.length ?? 0) == 0) {
+      printMessage(`[${imeiTemp}] (${remoteAdd}) process simple data [${data}]`);
+      values = data.match(REGEX_PACKET_SIMPLE) ?? [];
+    }
+
     /** imei not received */
     if (response.imei == '') {
       discardData(noImei);
@@ -52,7 +57,11 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     }
 
     /** Create location packet and persist */
-    const locationPacket: PositionPacket = createLocationPacket(response.imei, remoteAdd, values);
+    const locationPacket: PositionPacket | undefined = createLocationPacket(response.imei, remoteAdd, values);
+    if (!locationPacket) {
+      discardData('error creating location packet');
+      return response;
+    }
 
     /** Update last activity */
     persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
