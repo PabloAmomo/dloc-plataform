@@ -40,7 +40,7 @@ const handleData = async ({ imei, remoteAdd, data, handlePacket, persistence, co
 
   /** Send response */
   if (sended !== '') {
-    printMessage(`[${imei}] (${remoteAdd}) complete response [${sended}]`);
+    // printMessage(`[${imei}] (${remoteAdd}) complete response [${sended}]`);
   }
 
   /** Return results */
