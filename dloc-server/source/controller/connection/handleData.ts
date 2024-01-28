@@ -8,7 +8,7 @@ const handleData = async ({ imei, remoteAdd, data, handlePacket, persistence, co
 
   /** broke data into packets (Sometimes more than one packet is received) */
   const inPackets: string[] = (data ?? '').split('#');
-  var toSend: string = '';
+  var sended: string = '';
 
   /** Process each packet */
   for (let i = 0; i < inPackets.length; i++) {
@@ -25,7 +25,10 @@ const handleData = async ({ imei, remoteAdd, data, handlePacket, persistence, co
         /** Update imei */
         imei = result.imei;
         /** Save response to send */
-        if (result.response !== '' && conn) toSend += result.response;
+        if (result.response !== '' && conn) {
+          conn.write(result.response);
+          sended += result.response;
+        }
       });
     } catch (err: Error | any) {
       const printImei = imei !== '' ? imei : '---------------';
@@ -36,7 +39,9 @@ const handleData = async ({ imei, remoteAdd, data, handlePacket, persistence, co
   }
 
   /** Send response */
-  if (toSend !== '' && conn) conn.write(toSend);
+  if (sended !== '') {
+    printMessage(`[${imei}] (${remoteAdd}) complete response [${sended}]`);
+  }
 
   /** Return results */
   return results;
