@@ -26,7 +26,7 @@ export interface AddBatteryLevel {
   (imei: string, remoteAddress: string, batteryLevel: number):  Promise<PersistenceResult>;
 }
 export interface AddHistory {
-  (imei: string, remoteAddress: string, data: string):  Promise<PersistenceResult>;
+  (imei: string, remoteAddress: string, data: string, response: string):  Promise<PersistenceResult>;
 }
 export interface UpdateDevice {
   (locationPacket: PositionPacket):  Promise<PersistenceResult>;

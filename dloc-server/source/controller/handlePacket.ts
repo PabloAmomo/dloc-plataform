@@ -19,6 +19,9 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   /** Common function to discart packet */
   const discardData = (message: string) => {
     response.error = message;
+    /** Discarted packet */
+    printMessage(`[${imeiTemp}] (${remoteAdd}) discarted data (${message}) [${data}]`);
+    /** Persist discarted packet */
     persistence.addDiscarted(response.imei, remoteAdd, message, data).then((result: PersistenceResult) => {
       if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting discarted [${result.error}]`);
       // TODO: (addDiscarted) Process errors when persisting
@@ -133,6 +136,17 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     }
     response.response = `TRVBP${data.substring(5, 7)}#`;
   }
+  
+  // ---------------------------------------------
+  // UNKNOW but need response (TRVYP Packets)
+  // ---------------------------------------------
+  else if (data.startsWith('TRVYP1')) {
+    if (response.imei == '') {
+      discardData(noImei);
+      return response;
+    }
+    response.response = `TRVZP${data.substring(5, 7)}#`;
+  }
 
   // ------------------------------------------------
   // Packets with not response needed
@@ -165,8 +179,8 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     });
   }
 
-  /** Add history (Discarted packets not added) */
-  persistence.addHistory(response.imei, remoteAdd, data).then((result: PersistenceResult) => {
+  /** Add history */
+  persistence.addHistory(response.imei, remoteAdd, data, response.response).then((result: PersistenceResult) => {
     if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting history [${result.error}]`);
     // TODO: (addHistory) Process errors when persisting
   });

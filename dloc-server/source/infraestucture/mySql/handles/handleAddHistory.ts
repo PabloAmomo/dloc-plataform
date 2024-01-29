@@ -5,9 +5,9 @@ import mySqlQuerySync from '../functions/mySqlQueryAsync';
 
 const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 
-const handleAddHistory = async (imei: string, remoteAddress: string, data: string): Promise<PersistenceResult> => {
-  const params = [imei, remoteAddress, data];
-  const sql = `INSERT INTO history (imei, remoteAddress, data) VALUES (?, ?, ?);`;
+const handleAddHistory = async (imei: string, remoteAddress: string, data: string, response: string): Promise<PersistenceResult> => {
+  const params = [imei, remoteAddress, data, response];
+  const sql = `INSERT INTO history (imei, remoteAddress, data, response) VALUES (?, ?, ?, ?);`;
   return mySqlQuerySync(connectionConfig, sql, params);
 };
 
