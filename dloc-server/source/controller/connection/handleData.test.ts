@@ -227,12 +227,15 @@ test('Simulate command [INVALID] - Check discard', async () => {
     handlePacket,
     persistence,
     conn: {
-      write: (data: string) => {},
+      write: (data: string) => {
+        assert.ok(false, 'connection closed');
+      },
       destroy: () => {},
     },
-  }).then((results) => {
+  }).then((results: any) => {
     assert.equal(results.length, 1);
-    assert.equal(results[0].error, 'commad unknown');
+    assert.equal(results[0].imei, '');
+    assert.equal(results[0].error, '');
   });
 });
 

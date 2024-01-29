@@ -1,12 +1,12 @@
 import { createLocationPacket } from '../functions/createLocationPacket';
-import { PersistenceResult } from '../infraestucture/models/PersistenceResult';
 import { getUtcDateTime } from '../functions/getUtcDateTime';
 import { HandlePacket } from '../models/HandlePacket';
+import { HandlePacketProps } from '../models/HandlePacketProps';
 import { HandlePacketResult } from '../models/HandlePacketResult';
+import { PersistenceResult } from '../infraestucture/models/PersistenceResult';
 import { PositionPacket } from '../models/PositionPacket';
 import { printMessage } from '../functions/printMessage';
 import { REGEX_PACKET_NO_WIFI, REGEX_PACKET_SIMPLE, REGEX_PACKET_WIFI } from '../functions/packetParseREGEX';
-import { HandlePacketProps } from '../models/HandlePacketProps';
 
 const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }: HandlePacketProps): Promise<HandlePacketResult> => {
   const noImei: string = 'no imei received';
@@ -17,12 +17,13 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   var imeiTemp: string = imei == '' ? '---------------' : imei;
 
   /** Common function to discart packet */
-  const discardData = (message: string) => {
-    response.error = message;
+  const discardData = async (message: string, reportError: boolean) => {
+    /** Report error (or not) */
+    response.error = reportError ? message : '';
     /** Discarted packet */
     printMessage(`[${imeiTemp}] (${remoteAdd}) discarted data (${message}) [${data}]`);
     /** Persist discarted packet */
-    persistence.addDiscarted(response.imei, remoteAdd, message, data).then((result: PersistenceResult) => {
+    await persistence.addDiscarted(response.imei, remoteAdd, message, data).then((result: PersistenceResult) => {
       if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting discarted [${result.error}]`);
       // TODO: (addDiscarted) Process errors when persisting
     });
@@ -58,14 +59,14 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
 
     /** imei not received */
     if (response.imei == '') {
-      discardData(noImei);
+      discardData(noImei, true);
       return response;
     }
 
     /** Create location packet and persist */
     const locationPacket: PositionPacket | undefined = createLocationPacket(response.imei, remoteAdd, values);
     if (!locationPacket) {
-      discardData('error creating location packet');
+      discardData('error creating location packet', false);
       return response;
     }
 
@@ -74,18 +75,18 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
 
     if (locationPacket.valid) {
       /** Valid position */
-      persistence.addPosition(locationPacket).then((result: PersistenceResult) => {
+      await persistence.addPosition(locationPacket).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting position [${result.error}]`);
         // TODO: (addPosition) Process errors when persisting
       });
 
       /** Update device */
-      persistence.updateDevice(locationPacket).then((result: PersistenceResult) => {
+      await persistence.updateDevice(locationPacket).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating device [${result.error}]`);
         // TODO: (updateDevice) Process errors when persisting
 
         /** Discard old packet */
-        if (result.error?.message === 'old packet') discardData('old packet - update device');
+        if (result.error?.message === 'old packet') discardData('old packet - update device', false);
       });
     } else {
       /** Invalid position */
@@ -100,14 +101,14 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // ---------------------------------------
   else if (data.startsWith('TRVYP16')) {
     if (response.imei == '') {
-      discardData(noImei);
+      discardData(noImei, true);
       return response;
     }
     /** Process Battery level */
     if (data.length < 18) updateLastActivity = true;
     else {
       const batteryLevel: number = parseInt(data.substring(14, 17) ?? '0');
-      persistence.addBatteryLevel(response.imei, remoteAdd, batteryLevel).then((result: PersistenceResult) => {
+      await persistence.addBatteryLevel(response.imei, remoteAdd, batteryLevel).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting battery level [${result.error}]`);
         // TODO: (addBatteryLevel) Process errors when persisting
       });
@@ -120,7 +121,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // ---------------------------------------------
   else if (data.startsWith('TRVYP02')) {
     if (response.imei == '') {
-      discardData(noImei);
+      discardData(noImei, true);
       return response;
     }
     response.response = 'TRVZP02#';
@@ -131,18 +132,18 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // ---------------------------------------------
   else if (data.startsWith('TRVAP14') || data.startsWith('TRVAP89')) {
     if (response.imei == '') {
-      discardData(noImei);
+      discardData(noImei, true);
       return response;
     }
     response.response = `TRVBP${data.substring(5, 7)}#`;
   }
-  
+
   // ---------------------------------------------
   // UNKNOW but need response (TRVYP Packets)
   // ---------------------------------------------
   else if (data.startsWith('TRVYP1')) {
     if (response.imei == '') {
-      discardData(noImei);
+      discardData(noImei, true);
       return response;
     }
     response.response = `TRVZP${data.substring(5, 7)}#`;
@@ -168,19 +169,20 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // ---------------------------------------------
   else {
     printMessage(`[${imeiTemp}] (${remoteAdd}) command unknown in data [${data}]`);
-    discardData('commad unknown');
+    discardData('commad unknown', false);
     return response;
   }
 
   /** Update last activity */
   if (updateLastActivity) {
-    persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
+    await persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
       if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
+      // TODO: (updateLastActivity) Process errors when persisting
     });
   }
 
   /** Add history */
-  persistence.addHistory(response.imei, remoteAdd, data, response.response).then((result: PersistenceResult) => {
+  await persistence.addHistory(response.imei, remoteAdd, data, response.response).then((result: PersistenceResult) => {
     if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting history [${result.error}]`);
     // TODO: (addHistory) Process errors when persisting
   });
