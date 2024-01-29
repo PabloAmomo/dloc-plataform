@@ -10,6 +10,7 @@ import { HandlePacketProps } from '../models/HandlePacketProps';
 
 const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }: HandlePacketProps): Promise<HandlePacketResult> => {
   const noImei: string = 'no imei received';
+  let updateLastActivity: boolean = false;
   let response: HandlePacketResult = { imei, error: '', response: '' };
 
   /** Temporal imei (Used only for print messages for user) */
@@ -31,6 +32,8 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     response.imei = data.replace('TRVAP00', '').replace('#', '');
     imeiTemp = response.imei == '' ? '---------------' : response.imei;
     response.response = 'TRVBP00' + getUtcDateTime(false) + '#';
+    /** Update last activity */
+    if (response.imei !== '') updateLastActivity = true;
     printMessage(`[${imeiTemp}] (${remoteAdd}) imei [${response.imei}]`);
   }
 
@@ -64,10 +67,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     }
 
     /** Update last activity */
-    persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
-      if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
-      // TODO: (updateLastActivity) Process errors when persisting
-    });
+    updateLastActivity = true;
 
     if (locationPacket.valid) {
       /** Valid position */
@@ -81,14 +81,8 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
         if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating device [${result.error}]`);
         // TODO: (updateDevice) Process errors when persisting
 
-        if (result.error?.message === 'old packet') {
-          persistence
-            .addDiscarted(locationPacket.imei, locationPacket.remoteAddress, 'old packet - update device', JSON.stringify(locationPacket))
-            .then((result: PersistenceResult) => {
-              // TODO: (addDiscarted) Process errors when persisting
-              if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting discarted [${result.error}]`);
-            });
-        }
+        /** Discard old packet */
+        if (result.error?.message === 'old packet') discardData('old packet - update device');
       });
     } else {
       /** Invalid position */
@@ -107,17 +101,12 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
       return response;
     }
     /** Process Battery level */
-    if (data.length >= 18) {
+    if (data.length < 18) updateLastActivity = true;
+    else {
       const batteryLevel: number = parseInt(data.substring(14, 17) ?? '0');
       persistence.addBatteryLevel(response.imei, remoteAdd, batteryLevel).then((result: PersistenceResult) => {
         if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting battery level [${result.error}]`);
         // TODO: (addBatteryLevel) Process errors when persisting
-      });
-    } else {
-      /** Or simple update last activity */
-      persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
-        if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
-        // TODO: (updateLastActivity) Process errors when persisting
       });
     }
     response.response = 'TRVZP16#';
@@ -156,10 +145,7 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // Response to TRVWP02 config packet (Only Info)
   // ------------------------------------------------
   else if (data.startsWith('TRVXP020000010')) {
-    persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
-      if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
-      // TODO: (addHistory) Process errors when persisting
-    });
+    updateLastActivity = true;
     printMessage(`[${imeiTemp == '' ? '---------------' : response.imei}] (${remoteAdd}) confirmed TRVWP02 packet received`);
   }
 
@@ -172,15 +158,22 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
     return response;
   }
 
-  /** */
-  const message = response.response !== '' ? `response [${response.response}]` : `no response to send for packet [${data}]`;
-  printMessage(`[${imeiTemp}] (${remoteAdd}) ${message}`);
+  /** Update last activity */
+  if (updateLastActivity) {
+    persistence.updateLastActivity(response.imei, remoteAdd).then((result: PersistenceResult) => {
+      if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error updating last activity [${result.error}]`);
+    });
+  }
 
   /** Add history (Discarted packets not added) */
   persistence.addHistory(response.imei, remoteAdd, data).then((result: PersistenceResult) => {
     if (result.error) printMessage(`[${imeiTemp}] (${remoteAdd}) error persisting history [${result.error}]`);
     // TODO: (addHistory) Process errors when persisting
   });
+
+  /** */
+  const message = response.response !== '' ? `response [${response.response}]` : `no response to send for packet [${data}]`;
+  printMessage(`[${imeiTemp}] (${remoteAdd}) ${message}`);
 
   /** Return imei */
   return response;
