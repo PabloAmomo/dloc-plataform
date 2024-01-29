@@ -6,7 +6,7 @@ import { HandlePacketResult } from '../models/HandlePacketResult';
 import { PersistenceResult } from '../infraestucture/models/PersistenceResult';
 import { PositionPacket } from '../models/PositionPacket';
 import { printMessage } from '../functions/printMessage';
-import { REGEX_PACKET_NO_WIFI, REGEX_PACKET_SIMPLE, REGEX_PACKET_WIFI } from '../functions/packetParseREGEX';
+import { REGEX_PACKETS } from '../functions/packetParseREGEX';
 
 const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }: HandlePacketProps): Promise<HandlePacketResult> => {
   const noImei: string = 'no imei received';
@@ -45,16 +45,14 @@ const handlePacket: HandlePacket = async ({ imei, remoteAdd, data, persistence }
   // GPS DATA (14 or REPLY 15)
   // ---------------------------------------
   else if (data.startsWith('TRVYP14') || data.startsWith('TRVYP15')) {
-    let values: string[] = data.match(REGEX_PACKET_WIFI) ?? [];
-
-    if (values == null || (values?.length ?? 0) == 0) {
-      printMessage(`[${imeiTemp}] (${remoteAdd}) process data without wifi [${data}]`);
-      values = data.match(REGEX_PACKET_NO_WIFI) ?? [];
-    }
-
-    if (values == null || (values?.length ?? 0) == 0) {
-      printMessage(`[${imeiTemp}] (${remoteAdd}) process simple data [${data}]`);
-      values = data.match(REGEX_PACKET_SIMPLE) ?? [];
+    let values: string[] = [];
+    
+    for (let i = 0; i < REGEX_PACKETS.length; i++) {
+      values = data.match(REGEX_PACKETS[i]) ?? [];
+      if (values.length > 0) {
+        printMessage(`[${imeiTemp}] (${remoteAdd}) process data (REGEX ${i}) [${data}]`);
+        break;
+      }
     }
 
     /** imei not received */
