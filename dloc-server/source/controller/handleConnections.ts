@@ -41,6 +41,7 @@ const handleConnections = (conn: net.Socket, persistence: Persistence) => {
           /** If new connection send configuration after response */
           if (newConnection) {
             toSend += 'TRVWP020000010020#';
+            toSend += 'TRVBP20#';
             newConnection = false;
           }
 
