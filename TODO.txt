@@ -2,9 +2,7 @@ SERVER:
   Pending review of test TRVYP15
 
 API:
-  Create query to retrieve positions for all devices
   Add test
 
 FRONTEND:
-  Modify functionality to obtain positions for all devices in interval queries
-  Enable selection of time interval and display the device's path
+  When change interval, remove out of time paths from map.
