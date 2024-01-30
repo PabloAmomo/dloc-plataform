@@ -82,7 +82,7 @@ function GeoMap() {
         </ContainerTop>
       </ContainerAllScreen>
 
-      <GeoMapBottomMenu hideIntervalSelector hideDevicesSelector={devices.length === 0} />
+      <GeoMapBottomMenu hideDevicesSelector={devices.length === 0} />
     </>
   );
 }
