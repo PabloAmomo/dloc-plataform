@@ -17,8 +17,8 @@ class mySqlPersistence implements Persistence {
     return getDevice(imei);
   }
 
-  getDevices(): Promise<GetDevicesResult> {
-    return getDevices();
+  getDevices(interval: number): Promise<GetDevicesResult> {
+    return getDevices(interval);
   }
 
   getPositions(imei: string, interval: number): Promise<GetPositionsResult> {

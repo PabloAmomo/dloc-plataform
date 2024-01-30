@@ -19,7 +19,7 @@ export interface getDevice {
    (imei: string): Promise<GetDeviceResult>;
 }
 export interface getDevices {
-  (): Promise<GetDevicesResult>;
+  (interval: number): Promise<GetDevicesResult>;
 }
 
 export interface getPositions {
