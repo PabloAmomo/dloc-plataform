@@ -21,6 +21,12 @@ function GeoMap() {
   const { isLoading, setIsLoading, minutes, centerOn, onActions } = useMapContext();
   const abortAxios = useRef<AbortController>();
 
+  /** Force repaint path when minutes change */
+  useEffect(() => {
+    setTick(Date.now());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minutes]);
+
   /** Update all device positions */
   useEffect(() => {
     setIsLoading(true);

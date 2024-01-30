@@ -59,7 +59,7 @@ export function MapActionsProvider({ children }: { children: any }) {
 
   const onActions = useRef<MapActions>(emptyActions);
 
-  const addMapPaths = (devices: Device[]) => setMapPaths(processMapPaths(devices, mapPaths));
+  const addMapPaths = (devices: Device[]) => setMapPaths(processMapPaths(devices, mapPaths, minutes));
 
   const onGetPosition = (position: LatLng | undefined) => setMyPosition(position);
 

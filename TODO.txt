@@ -1,8 +1,6 @@
 SERVER:
-  Pending review of test TRVYP15
 
 API:
   Add test
 
 FRONTEND:
-  When change interval, remove out of time paths from map.

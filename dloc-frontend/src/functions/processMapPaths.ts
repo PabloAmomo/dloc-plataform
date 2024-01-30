@@ -7,7 +7,7 @@ import { Path } from 'models/Path';
 import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
 import distanceFromLatLngInMeters from './distanceFromLatLngInMeters';
 
-const processMapPaths = (devices: Device[], mapPaths: MapPath[]) : MapPath[] => {
+const processMapPaths = (devices: Device[], mapPaths: MapPath[], minutes: number) : MapPath[] => {
   const newMapPaths = [...(mapPaths ?? [])];
 
   /** Process devices */
@@ -36,7 +36,13 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[]) : MapPath[] => 
     });
 
     /** Make array of paths and sort by dateTimeUTC */
-    const newPaths: Path[] = Array.from(paths, ([name, value]) => value);
+    let newPaths: Path[] = Array.from(paths, ([name, value]) => value);
+
+    /** Remove paths older than minutes */
+    const timeLimit: Date = new Date(new Date().getTime() - (minutes * 60 * 1000));
+    newPaths = newPaths.filter((path: Path) => convertUTCDateToLocalDate(path.dateTimeUTC) > timeLimit);
+
+    /** Make array of paths and sort by dateTimeUTC */
     newPaths.sort((a: Path, b: Path) => convertUTCDateToLocalDate(a.dateTimeUTC).getTime() - convertUTCDateToLocalDate(b.dateTimeUTC).getTime());
 
     /** Correct paths to start and end correctly */
