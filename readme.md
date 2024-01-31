@@ -4,6 +4,7 @@ This project is a robust and efficient server designed to receive and process GP
 
 ## DLOC Server
 Server to receive information from GPS Devices.
+Ready for use with traccar client. (For configure use http://url/connector/location)
 
 ### Configure GPS Device to send data to server
 -- pending --
