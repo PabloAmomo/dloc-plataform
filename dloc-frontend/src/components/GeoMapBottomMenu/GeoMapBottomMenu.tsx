@@ -46,7 +46,7 @@ function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = 
 
         {/* Devices Selector */}
         {!hideDevicesSelector && (
-          <Grid item xs={'auto'} sx={{ paddingRight: '12px!important', paddingTop: '8!important' }}>
+          <Grid item xs={'auto'} sx={{ paddingRight: '12px!important', paddingTop: '0!important' }}>
             <DevicesSelector disabled={isLoading} showDevices={showDevices} setShowDevices={setShowDevices} />
           </Grid>
         )}
