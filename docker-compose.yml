@@ -30,7 +30,7 @@ services:
     networks: ["dloc-network"]
     build: ./dloc-server
     ports: 
-      - ${PORT_SERVER}:8080
+      - ${PORT_SERVER_SOCKET}:8080
     depends_on:
       dloc-database:
         condition: service_healthy

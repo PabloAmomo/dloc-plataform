@@ -7,7 +7,7 @@ const connectionConfig: ConnectionConfig = mySqlConnectionConfig;
 
 const handleHealth = async (): Promise<PersistenceResult> => {
   /** Arbitrary query */
-  return mySqlQuerySync(connectionConfig, 'SELECT * FROM dloc.device LIMIT 1;', []);
+  return mySqlQuerySync(connectionConfig, 'SELECT (1) LIMIT 1;', []);
 };
 
 export { handleHealth };

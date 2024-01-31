@@ -15,5 +15,6 @@ COPY ./.env .
 COPY ./build .
 
 EXPOSE 8080
+EXPOSE 8088
 
 CMD [ "node", "server.js" ]
