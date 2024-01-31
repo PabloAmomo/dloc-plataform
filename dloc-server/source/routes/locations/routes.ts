@@ -11,12 +11,13 @@ const _location = (req: express.Request, res: express.Response, next: express.Ne
   const timestamp: string = req.query?.timestamp?.toString() ?? '';
   const speed: string = req.query?.speed?.toString() ?? '';
   const bearing: string = req.query?.bearing?.toString() ?? '';
-  const altitude: string = req.query?.altitude?.toString() ?? '';
-  const accuracy: string = req.query?.accuracy?.toString() ?? '';
   const batt: string = req.query?.batt?.toString() ?? '';
-  const dateTimeUtc: Date | null = timestamp ? new Date(parseInt(timestamp)) : null;
+  const dateTimeUtc: Date | null = timestamp ? new Date(parseInt(timestamp) * 1000) : null;
   const remoteAddress: string = req.ip?.toString() ?? '';
   const gsmSignal: number = 100;
+  const valid: boolean = true;
+  const batteryLevel: number = batt ? parseFloat(batt) : 0;
+  const directionAngle: number = bearing ? parseFloat(bearing) : 0;
 
   if (!imei) {
     res.status(400).json({ error: 'imei is required' });
@@ -35,17 +36,17 @@ const _location = (req: express.Request, res: express.Response, next: express.Ne
     imei,
     remoteAddress,
     dateTimeUtc,
-    valid: true,
+    valid,
     lat,
     lng,
-    speed: speed ? parseFloat(speed) : 0,
-    directionAngle: bearing ? parseFloat(bearing) : 0,
     gsmSignal,
-    batteryLevel: batt ? parseFloat(batt) : 0,
+    speed: speed ? parseFloat(speed) : 0,
+    directionAngle,
+    batteryLevel,
   };
 
-  console.log('Location packet:', positionPacket);
-  
+  // console.log('Location packet:', positionPacket);
+
   if (positionPacket.lat === null || positionPacket.lng === null) {
     res.status(400).json({ error: 'invalid lat or lng' });
     return;
