@@ -1,10 +1,11 @@
-import { Box, Grid, SxProps, } from '@mui/material';
+import { Box, Grid, SxProps } from '@mui/material';
 import { memo, useEffect } from 'react';
 import { useMapContext } from 'context/MapProvider';
 import { UserSettings } from 'models/UserSettings';
-import {userSettingsGet, userSettingsSet } from 'functions/userSettings';
+import { userSettingsGet, userSettingsSet } from 'functions/userSettings';
 import DevicesSelector from 'components/DevicesSelector/DevicesSelector';
 import IntervalSelector from 'components/IntervalSelector/IntervalSelector';
+import { useDevicesContext } from 'context/DevicesProvider';
 
 const middleSxProps: SxProps = { flexGrow: '1!important', display: 'flex', pl: '0!important', pr: '0!important' };
 const containerSxProps: SxProps = {
@@ -22,8 +23,9 @@ const containerSxProps: SxProps = {
   right: 0,
 };
 
-function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = false }: { hideIntervalSelector?: boolean; hideDevicesSelector?: boolean }) {
+function GeoMapBottomMenu() {
   const { isLoading, minutes, setMinutes, showDevices, setShowDevices } = useMapContext();
+  const { devices } = useDevicesContext();
 
   useEffect(() => {
     const userSettings: UserSettings = userSettingsGet();
@@ -36,16 +38,14 @@ function GeoMapBottomMenu({ hideIntervalSelector = false, hideDevicesSelector = 
     <Box className="boxShadow6-inverted" sx={containerSxProps}>
       <Grid container spacing={2} sx={{ flexWrap: 'nowrap' }}>
         {/* Interval Selector */}
-        {!hideIntervalSelector && (
-          <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
-            <IntervalSelector disabled={isLoading} setMinutes={setMinutes} minutes={minutes} />
-          </Grid>
-        )}
+        <Grid item xs={'auto'} sx={{ paddingLeft: '12px!important', paddingTop: '0!important' }}>
+          <IntervalSelector disabled={isLoading} setMinutes={setMinutes} minutes={minutes} />
+        </Grid>
 
         <Grid item xs={'auto'} sx={middleSxProps} />
 
         {/* Devices Selector */}
-        {!hideDevicesSelector && (
+        {devices && devices.length > 0 && (
           <Grid item xs={'auto'} sx={{ paddingRight: '12px!important', paddingTop: '8px!important' }}>
             <DevicesSelector disabled={isLoading} showDevices={showDevices} setShowDevices={setShowDevices} />
           </Grid>

@@ -88,7 +88,7 @@ function GeoMap() {
         </ContainerTop>
       </ContainerAllScreen>
 
-      <GeoMapBottomMenu hideDevicesSelector={devices.length === 0} />
+      <GeoMapBottomMenu />
     </>
   );
 }
