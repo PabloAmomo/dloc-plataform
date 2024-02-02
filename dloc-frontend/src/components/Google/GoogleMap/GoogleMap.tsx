@@ -89,7 +89,8 @@ const GoogleMap = () => {
     if (!onActions.current.mapReady()) return;
 
     /** Add mapPaths */
-    addMapPaths(devices);
+    const filteredDevices = devices.filter((device: Device) => showDevices.includes('0') || showDevices.includes(device.imei));
+    addMapPaths(filteredDevices);
 
     /** Set the devices */
     setUserDevices(devices);
@@ -100,7 +101,7 @@ const GoogleMap = () => {
       if (device) setCenterOn({ device, changeZoom: false });
     } else if (!zoomChanged && !mapMoved) onActions.current.centerBounds(zoomChanged ?? false, mapMoved ?? false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [devices, map, isLoaded]);
+  }, [devices, map, showDevices, isLoaded]);
 
   /** Drag */
   const handleOnDragEnd = () => {

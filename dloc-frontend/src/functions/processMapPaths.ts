@@ -7,8 +7,15 @@ import { Path } from 'models/Path';
 import convertUTCDateToLocalDate from './convertUTCDateToLocalDate';
 import distanceFromLatLngInMeters from './distanceFromLatLngInMeters';
 
-const processMapPaths = (devices: Device[], mapPaths: MapPath[], minutes: number) : MapPath[] => {
+const processMapPaths = (devices: Device[], mapPaths: MapPath[], minutes: number): MapPath[] => {
   const newMapPaths = [...(mapPaths ?? [])];
+
+  /** Remove mapPaths not in devices */
+  const imeiList: string[] = devices.map((device: Device) => device.imei);
+  for (let i = newMapPaths.length - 1; i >= 0; i--) {
+    const mapPath: MapPath = newMapPaths[i];
+    if (!imeiList.includes(mapPath.imei)) newMapPaths.splice(i, 1);
+  }
 
   /** Process devices */
   for (let i = 0; i < devices.length; i++) {
@@ -39,7 +46,7 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[], minutes: number
     let newPaths: Path[] = Array.from(paths, ([name, value]) => value);
 
     /** Remove paths older than minutes */
-    const timeLimit: Date = new Date(new Date().getTime() - (minutes * 60 * 1000));
+    const timeLimit: Date = new Date(new Date().getTime() - minutes * 60 * 1000);
     newPaths = newPaths.filter((path: Path) => convertUTCDateToLocalDate(path.dateTimeUTC) > timeLimit);
 
     /** Make array of paths and sort by dateTimeUTC */
@@ -69,7 +76,7 @@ const processMapPaths = (devices: Device[], mapPaths: MapPath[], minutes: number
     newPaths.forEach((path: Path) => {
       mapPath.distance += distanceFromLatLngInMeters(path.start.lat, path.start.lng, path.end.lat, path.end.lng);
     });
-   
+
     /** Update las time */
     if (mapPath.path.length > 0) mapPath.lastPositionUTC = mapPath.path[mapPath.path.length - 1].dateTimeUTC;
 
