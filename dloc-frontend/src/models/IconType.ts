@@ -7,4 +7,5 @@ export enum IconType {
   end = "end",
   pulse = "pulse",
   pin = "pin",
+  mobile = "mobile",
 }

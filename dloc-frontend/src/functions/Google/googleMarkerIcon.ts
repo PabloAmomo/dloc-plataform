@@ -32,6 +32,13 @@ const googleMarkerIcon = (iconType: IconType, options: any = {}) : google.maps.I
         labelOrigin = new google.maps.Point(24, 12);
         break;
 
+        case IconType.mobile:
+          useThisUrl = "images/markers/map-marker-mobile.svg";
+          anchor = new google.maps.Point(24, 48);
+          scaledSize = new google.maps.Size(48, 48);
+          labelOrigin = new google.maps.Point(24, 12);
+          break;
+
       case IconType.pet:
         useThisUrl = "images/markers/map-marker-pet.svg";
         anchor = new google.maps.Point(24, 48);

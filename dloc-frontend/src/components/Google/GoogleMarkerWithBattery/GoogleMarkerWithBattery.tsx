@@ -1,13 +1,13 @@
-import { Marker } from '@react-google-maps/api';
-import GoogleMarkerLabel from 'components/Google/GoogleMarkerLabel/GoogleMarkerLabel';
 import { Box } from '@mui/material';
 import { config } from 'config/config';
-import googleMarkerIcon from 'functions/Google/googleMarkerIcon';
-import calculateTime from 'functions/calculateTime';
-import { useTranslation } from 'react-i18next';
 import { Device } from 'models/Device';
-import convertUTCDateToLocalDate from 'functions/convertUTCDateToLocalDate';
 import { LatLng } from 'models/LatLng';
+import { Marker } from '@react-google-maps/api';
+import { useTranslation } from 'react-i18next';
+import calculateTime from 'functions/calculateTime';
+import convertUTCDateToLocalDate from 'functions/convertUTCDateToLocalDate';
+import googleMarkerIcon from 'functions/Google/googleMarkerIcon';
+import GoogleMarkerLabel from 'components/Google/GoogleMarkerLabel/GoogleMarkerLabel';
 
 interface OnClick {
   (device: Device): void;
