@@ -11,7 +11,7 @@ import GeoMapButton from 'components/GeoMapButton/GeoMapButton';
 
 const unSelectBackgroundColorProp: string = 'rgba(0, 0, 0, 0.1)';
 const selectBackgroundColorProp: string = 'rgba(0, 0, 0, 0.5)';
-const unSelectTextColorProp: string = 'red';
+const unSelectTextColorProp: string = selectBackgroundColorProp; //'red';
 const selectTextColorProp: string = 'white';
 const buttonsContainerProps: SxProps = { position: 'absolute', top: 0, right: 0, display: 'flex', mt: 1, mr: 1 };
 const buttonContainerProps: SxProps = { backgroundColor: unSelectBackgroundColorProp, borderRadius: '50%', ml: 1 };

@@ -92,7 +92,6 @@ const DevicesSelector = ({
           ref={refHidden}
           sx={{
             minWidth: '180px',
-            maxWidth: '200px',
             '& label.MuiFormLabel-root': { transition: 'all .5s', marginTop: '8px' },
             '& label.MuiFormLabel-root.Mui-focused': { color: 'inherit' },
             '& .MuiSelect-select': { paddingBottom: 0 },
